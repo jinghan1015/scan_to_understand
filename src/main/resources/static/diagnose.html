@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诊断页面</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .title { font-size: 18px; font-weight: 600; margin-bottom: 10px; color: #00d4ff; }
+        .success { color: #00ff88; }
+        .error { color: #ff6b6b; }
+        .warning { color: #ffd93d; }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover { opacity: 0.9; }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .result {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align:center;margin-bottom:30px;">🔧 诊断页面</h1>
+
+        <div class="card">
+            <div class="title">1. 当前环境信息</div>
+            <div id="env-info"></div>
+        </div>
+
+        <div class="card">
+            <div class="title">2. 后端连接测试</div>
+            <button class="btn" onclick="testBackend()">测试后端API</button>
+            <button class="btn" onclick="testStatic()">测试静态资源</button>
+            <div id="backend-result" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="card">
+            <div class="title">3. ngrok 配置</div>
+            <p style="color:rgba(255,255,255,0.6);font-size:13px;">
+                请输入你的 ngrok 地址（不带尾部斜杠）：</p>
+            <input type="text" id="ngrok-url" placeholder="例如: https://abc123.ngrok-free.dev" />
+            <button class="btn" onclick="saveAndTest()">保存并测试</button>
+        </div>
+
+        <div class="card">
+            <div class="title">4. 快速访问</div>
+            <button class="btn" onclick="goTo('login')">登录页面</button>
+            <button class="btn" onclick="goTo('register')">注册页面</button>
+            <button class="btn" onclick="goTo('index')">首页</button>
+        </div>
+    </div>
+
+    <script>
+        var BASE_URL = window.location.origin;
+        document.getElementById('env-info').innerHTML = `
+            <div><strong>当前域名:</strong> ${window.location.origin}</div>
+            <div><strong>协议:</strong> ${window.location.protocol}</div>
+            <div><strong>用户代理:</strong> ${navigator.userAgent.substring(0, 50)}...</div>
+        `;
+
+        async function testBackend() {
+            var resultDiv = document.getElementById('backend-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '测试中...';
+
+            try {
+                var res = await fetch(BASE_URL + '/api/card/test');
+                var data = await res.json();
+                resultDiv.innerHTML = JSON.stringify(data, null, 2);
+                resultDiv.style.color = '#00ff88';
+            } catch (e) {
+                resultDiv.innerHTML = '错误: ' + e.message;
+                resultDiv.style.color = '#ff6b6b';
+            }
+        }
+
+        async function testStatic() {
+            var resultDiv = document.getElementById('backend-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '测试中...';
+
+            try {
+                // 测试静态HTML
+                var res1 = await fetch(BASE_URL + '/index.html');
+                var status1 = res1.status;
+
+                // 测试 common.js
+                var res2 = await fetch(BASE_URL + '/common.js');
+                var status2 = res2.status;
+
+                resultDiv.innerHTML = `静态资源测试结果:\n- /index.html: ${status1}\n- /common.js: ${status2}`;
+                resultDiv.style.color = status1 === 200 && status2 === 200 ? '#00ff88' : '#ffd93d';
+            } catch (e) {
+                resultDiv.innerHTML = '错误: ' + e.message;
+                resultDiv.style.color = '#ff6b6b';
+            }
+        }
+
+        function saveAndTest() {
+            var url = document.getElementById('ngrok-url').value.trim();
+            if (!url) {
+                alert('请输入 ngrok 地址');
+                return;
+            }
+            localStorage.setItem('ngrok-url', url);
+            alert('已保存！现在你可以：\n1. 重新启动后端\n2. 更新 ngrok 配置文件中的 base-url');
+        }
+
+        function goTo(page) {
+            window.location.href = page + '.html';
+        }
+
+        // 加载保存的 ngrok URL
+        var savedUrl = localStorage.getItem('ngrok-url');
+        if (savedUrl) {
+            document.getElementById('ngrok-url').value = savedUrl;
+        }
+    </script>
+</body>
+</html>

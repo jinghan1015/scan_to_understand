@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片详情</title>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow-x: hidden;
+        }
+        .glow-orb {
+            position: fixed; border-radius: 50%; filter: blur(100px); opacity: 0.2;
+            animation: float 12s ease-in-out infinite; pointer-events: none; z-index: 0;
+        }
+        .orb-1 { width: 300px; height: 300px; background: radial-gradient(circle, #00d4ff 0%, transparent 70%); top: -80px; right: -80px; }
+        .orb-2 { width: 250px; height: 250px; background: radial-gradient(circle, #7c3aed 0%, transparent 70%); bottom: 20%; left: -60px; animation-delay: -4s; }
+        @keyframes float { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(15px, -15px); } }
+        .grid-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px; pointer-events: none; z-index: 0;
+        }
+        .app-container { position: relative; z-index: 2; min-height: 100vh; padding-bottom: 40px; }
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 25px; background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .back-btn {
+            width: 40px; height: 40px; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 18px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .back-btn:hover { background: rgba(0, 212, 255, 0.1); border-color: rgba(0, 212, 255, 0.3); }
+        .header-title { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: 2px; }
+        .content { padding: 30px 25px; }
+        .card-hero {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px; padding: 30px; margin-bottom: 25px; backdrop-filter: blur(10px);
+        }
+        .card-badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+            background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px; color: #00d4ff; font-size: 11px; letter-spacing: 1px; margin-bottom: 20px;
+        }
+        .card-badge::before { content: ''; width: 6px; height: 6px; background: #00d4ff; border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+        .card-title { font-size: 28px; font-weight: 700; color: #fff; margin-bottom: 20px; line-height: 1.3; letter-spacing: 1px; }
+        .card-meta { display: flex; align-items: center; gap: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        .meta-item { display: flex; align-items: center; gap: 6px; color: rgba(255, 255, 255, 0.4); font-size: 12px; }
+        .meta-item span { color: #00d4ff; }
+        .section-block {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px; padding: 25px; margin-bottom: 20px; backdrop-filter: blur(10px);
+        }
+        .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .section-icon {
+            width: 36px; height: 36px; background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;
+        }
+        .section-title { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 1px; }
+        .text-content { color: rgba(255, 255, 255, 0.8); font-size: 15px; line-height: 1.8; white-space: pre-wrap; word-break: break-word; }
+        .images-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .image-item { aspect-ratio: 1; background: rgba(255, 255, 255, 0.03); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); }
+        .image-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .image-item:hover img { transform: scale(1.05); }
+        .image-item.single { grid-column: span 2; aspect-ratio: 16/9; }
+        .media-wrapper { background: rgba(0, 0, 0, 0.3); border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .media-wrapper video, .media-wrapper audio { width: 100%; display: block; }
+        .media-wrapper audio { height: 60px; }
+        .loading-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+        .loading-spinner { width: 60px; height: 60px; border: 3px solid rgba(255, 255, 255, 0.1); border-top-color: #00d4ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: rgba(255, 255, 255, 0.5); font-size: 14px; letter-spacing: 2px; }
+        .empty-container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 40px; }
+        .empty-icon { width: 100px; height: 100px; background: rgba(255, 255, 255, 0.03); border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .empty-text { color: rgba(255, 255, 255, 0.5); font-size: 16px; }
+    </style>
+</head>
+
+<body>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="grid-bg"></div>
+
+    <div id="app" class="app-container">
+        <div class="header">
+            <div class="back-btn" @click="goBack">←</div>
+            <div class="header-title">卡片详情</div>
+            <div style="width:40px;"></div>
+        </div>
+
+        <div v-if="loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">加载中...</div>
+        </div>
+
+        <div v-else-if="!card" class="empty-container">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">卡片不存在</div>
+        </div>
+
+        <div v-else class="content">
+            <div class="card-hero">
+                <div class="card-badge">DIGITAL CARD</div>
+                <h1 class="card-title">{{ card.title }}</h1>
+                <div class="card-meta">
+                    <div class="meta-item">🕐 <span>实时更新</span></div>
+                    <div class="meta-item">🔒 <span>安全存储</span></div>
+                </div>
+            </div>
+
+            <div v-if="card.textContent" class="section-block">
+                <div class="section-header">
+                    <div class="section-icon">📝</div>
+                    <div class="section-title">文字内容</div>
+                </div>
+                <div class="text-content">{{ card.textContent }}</div>
+            </div>
+
+            <div v-if="images && images.length" class="section-block">
+                <div class="section-header">
+                    <div class="section-icon">🖼️</div>
+                    <div class="section-title">图片集</div>
+                </div>
+                <div class="images-grid">
+                    <div class="image-item" :class="{ single: images.length === 1 }" v-for="(img, idx) in images" :key="idx">
+                        <img :src="img.startsWith('http') ? img : BASE_URL + img" @click="previewImage(idx)" />
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="card.videoUrl" class="section-block">
+                <div class="section-header">
+                    <div class="section-icon">🎬</div>
+                    <div class="section-title">视频内容</div>
+                </div>
+                <div class="media-wrapper">
+                    <video controls :src="card.videoUrl.startsWith('http') ? card.videoUrl : BASE_URL + card.videoUrl"></video>
+                </div>
+            </div>
+
+            <div v-if="card.audioUrl" class="section-block">
+                <div class="section-header">
+                    <div class="section-icon">🎙️</div>
+                    <div class="section-title">语音介绍</div>
+                </div>
+                <div class="media-wrapper">
+                    <audio controls :src="card.audioUrl.startsWith('http') ? card.audioUrl : BASE_URL + card.audioUrl"></audio>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
+    <script src="common.js"></script>
+    <script>
+        const { createApp, ref, onMounted } = Vue;
+        const app = createApp({
+            setup() {
+                const card = ref(null);
+                const images = ref([]);
+                const loading = ref(true);
+                const urlParams = new URLSearchParams(window.location.search);
+                const uuid = urlParams.get('uuid');
+
+                onMounted(async () => {
+                    if (!uuid) { loading.value = false; return; }
+                    try {
+                        const res = await fetch(`${BASE_URL}/api/card/detail/${uuid}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            card.value = data.data;
+                            if (data.data.imageUrls) {
+                                images.value = JSON.parse(data.data.imageUrls);
+                            }
+                        }
+                    } catch (e) { console.error(e); }
+                    finally { loading.value = false; }
+                });
+
+                const previewImage = (index) => {
+                    const fullUrls = images.value.map(img => img.startsWith('http') ? img : BASE_URL + img);
+                    vant.ImagePreview(fullUrls, { startIndex: index });
+                };
+
+                const goBack = () => { location.href = 'mine.html'; };
+
+                return { card, images, loading, BACKEND_URL, previewImage, goBack };
+            }
+        });
+        app.use(vant);
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

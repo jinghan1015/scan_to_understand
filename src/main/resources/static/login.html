@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>码上明晓 - 登录</title>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0a0e27 0%, #13183a 50%, #0d1329 100%);
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: #00d4ff;
+            top: -100px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px;
+            height: 300px;
+            background: #7c3aed;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: -3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(30px, -20px) scale(1.05);
+            }
+            50% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+            75% {
+                transform: translate(25px, 25px) scale(1.02);
+            }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+        }
+
+        .login-card {
+            background: rgba(10, 14, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px 32px;
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4ff, #7c3aed, transparent);
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8892b0;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 32px;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+            margin: 0 auto 28px;
+        }
+
+        .logo::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 2px solid white;
+            transform: rotate(45deg);
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #8892b0;
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: #8892b0;
+            margin-bottom: 10px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-input:focus {
+            border-color: rgba(0, 212, 255, 0.5);
+            background: rgba(0, 212, 255, 0.05);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            border: none;
+            border-radius: 14px;
+            color: #0a0e27;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0px) scale(0.98);
+        }
+
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: scale(0);
+        }
+
+        .submit-btn:active::after {
+            animation: ripple 0.4s ease-out;
+        }
+
+        @keyframes ripple {
+            from { transform: scale(0); opacity: 1; }
+            to { transform: scale(60); opacity: 0; }
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 28px;
+        }
+
+        .switch-link-text {
+            color: #8892b0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        .switch-link-text:hover {
+            color: #00d4ff;
+            transform: translateY(-1px);
+        }
+
+        .switch-link-text span {
+            color: #00d4ff;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px 16px;
+            }
+
+            .login-card {
+                padding: 30px 24px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 24px;
+            }
+
+            .logo::before {
+                width: 20px;
+                height: 20px;
+            }
+
+            .title {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 13px;
+                margin-bottom: 32px;
+            }
+
+            .form-input {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+
+            .submit-btn {
+                padding: 16px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-height: 640px) and (orientation: landscape) {
+            .login-container {
+                padding: 16px;
+            }
+
+            .login-card {
+                padding: 24px 20px;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+                margin-bottom: 16px;
+            }
+
+            .title {
+                font-size: 22px;
+                margin-bottom: 4px;
+            }
+
+            .subtitle {
+                margin-bottom: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-overlay"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="login-container" id="app">
+        <div class="login-card">
+            <div class="back-btn" @click="goBack">←</div>
+            <div class="logo"></div>
+            <h2 class="title">登录</h2>
+            <p class="subtitle">欢迎回来</p>
+
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="form-input" v-model="username" placeholder="请输入用户名" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" v-model="password" placeholder="请输入密码" />
+            </div>
+
+            <button class="submit-btn" @click="handleLogin" :disabled="loading">
+                {{ loading ? '登录中...' : '登录' }}
+            </button>
+
+            <div class="switch-link">
+                <span class="switch-link-text" @click="goToRegister">
+                    还没有账号？<span>立即注册</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
+    <script src="common.js"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+        const app = createApp({
+            setup() {
+                const username = ref('');
+                const password = ref('');
+                const loading = ref(false);
+
+                const goBack = () => {
+                    window.location.href = 'index.html';
+                };
+
+                const handleLogin = async () => {
+                    if (!username.value.trim()) {
+                        vant.Toast.fail('请输入用户名');
+                        return;
+                    }
+                    if (!password.value) {
+                        vant.Toast.fail('请输入密码');
+                        return;
+                    }
+
+                    loading.value = true;
+                    try {
+                        const response = await fetch(`${BASE_URL}/api/user/login`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                username: username.value,
+                                password: password.value
+                            })
+                        });
+
+                        const result = await response.json();
+                        if (response.ok && result.code === 200) {
+                            vant.Toast.success('登录成功');
+                            localStorage.setItem('userId', result.data.userId);
+                            localStorage.setItem('username', result.data.nickname);
+                            window.location.href = 'index.html';
+                        } else {
+                            vant.Toast.fail(result.msg || '登录失败');
+                        }
+                    } catch (error) {
+                        vant.Toast.fail('网络错误，请稍后重试');
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                const goToRegister = () => {
+                    window.location.href = 'register.html';
+                };
+
+                return { username, password, loading, goBack, handleLogin, goToRegister };
+            }
+        });
+        app.use(vant);
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片测试</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+        }
+        .info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(0,212,255,0.1);
+            border-radius: 8px;
+        }
+        .success { color: #00ff88; }
+        .error { color: #ff6b6b; }
+        img {
+            max-width: 200px;
+            border: 2px solid #00d4ff;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 图片访问测试</h1>
+
+    <div class="info">
+        <p><strong>当前域名 (BASE_URL):</strong> <span id="baseUrl"></span></p>
+        <p><strong>建议:</strong> 请确保你的 ngrok 正在运行，否则图片无法加载</p>
+    </div>
+
+    <h3>测试步骤：</h3>
+    <ol>
+        <li>确保后端正在运行 (mvn spring-boot:run)</li>
+        <li>确保 ngrok 正在运行 (ngrok http 8080)</li>
+        <li>在下方输入数据库中的图片路径进行测试</li>
+    </ol>
+
+    <div class="test-item">
+        <h4>测试1: 直接用完整URL访问</h4>
+        <input type="text" id="fullUrl" placeholder="https://xxx.ngrok-free.dev/uploads/xxx.png" style="width:100%;padding:10px;border-radius:5px;border:1px solid #555;background:#333;color:#fff;">
+        <button onclick="testImage()" style="margin-top:10px;padding:10px 20px;background:#00d4ff;border:none;border-radius:5px;cursor:pointer;">测试图片</button>
+        <div id="result1"></div>
+    </div>
+
+    <div class="test-item">
+        <h4>测试2: 用相对路径测试</h4>
+        <input type="text" id="relativePath" value="/uploads/test.png" style="width:100%;padding:10px;border-radius:5px;border:1px solid #555;background:#333;color:#fff;">
+        <button onclick="testRelative()" style="margin-top:10px;padding:10px 20px;background:#00d4ff;border:none;border-radius:5px;cursor:pointer;">测试图片</button>
+        <div id="result2"></div>
+    </div>
+
+    <script src="common.js"></script>
+    <script>
+        document.getElementById('baseUrl').textContent = BASE_URL;
+        document.getElementById('fullUrl').value = BASE_URL + '/uploads/';
+        document.getElementById('relativePath').value = '/uploads/';
+
+        async function testImage() {
+            const url = document.getElementById('fullUrl').value;
+            const resultDiv = document.getElementById('result1');
+            resultDiv.innerHTML = '测试中...';
+
+            try {
+                const img = new Image();
+                img.onload = () => {
+                    resultDiv.innerHTML = `<p class="success">✅ 图片可以访问!</p><img src="${url}" />`;
+                };
+                img.onerror = () => {
+                    resultDiv.innerHTML = `<p class="error">❌ 图片无法访问</p><p>URL: ${url}</p>`;
+                };
+                img.src = url;
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">错误: ${e.message}</p>`;
+            }
+        }
+
+        async function testRelative() {
+            const relativePath = document.getElementById('relativePath').value;
+            const fullUrl = BASE_URL + relativePath;
+            const resultDiv = document.getElementById('result2');
+            resultDiv.innerHTML = '测试中...';
+
+            try {
+                const img = new Image();
+                img.onload = () => {
+                    resultDiv.innerHTML = `<p class="success">✅ 图片可以访问!</p><img src="${fullUrl}" />`;
+                };
+                img.onerror = () => {
+                    resultDiv.innerHTML = `<p class="error">❌ 图片无法访问</p><p>完整URL: ${fullUrl}</p>`;
+                };
+                img.src = fullUrl;
+            } catch (e) {
+                resultDiv.innerHTML = `<p class="error">错误: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
