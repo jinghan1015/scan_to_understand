@@ -2,6 +2,7 @@ package msmx.controller;
 
 import msmx.entity.Card;
 import msmx.service.CardService;
+import msmx.service.QRCodeGenerator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,8 +42,9 @@ public class CardController {
             @RequestParam(value = "textContent", required = false) String textContent,
             @RequestParam(value = "images", required = false) MultipartFile[] images,
             @RequestParam(value = "video", required = false) MultipartFile video,
-            @RequestParam(value = "audio", required = false) MultipartFile audio) throws Exception {
-        Card card = cardService.createCard(userId, title, textContent, images, video, audio);
+            @RequestParam(value = "audio", required = false) MultipartFile audio,
+            @RequestParam(value = "isPublic", defaultValue = "false") Boolean isPublic) throws Exception {
+        Card card = cardService.createCard(userId, title, textContent, images, video, audio, isPublic);
         Map<String, Object> result = new HashMap<>();
         result.put("code", 200);
         result.put("data", card);
@@ -67,6 +69,26 @@ public class CardController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> allCards() {
+        List<Card> cards = cardService.getPublicCards();
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", 200);
+        result.put("data", cards);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/check-duplicate")
+    public ResponseEntity<?> checkDuplicate(
+            @RequestParam("userId") Long userId,
+            @RequestParam("title") String title) {
+        boolean exists = cardService.checkDuplicate(userId, title);
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", 200);
+        result.put("data", Map.of("exists", exists));
+        return ResponseEntity.ok(result);
+    }
+
     @DeleteMapping("/{uuid}")
     public ResponseEntity<?> deleteCard(@PathVariable("uuid") String uuid) {
         try {
@@ -80,6 +102,40 @@ public class CardController {
             result.put("code", 400);
             result.put("msg", e.getMessage());
             return ResponseEntity.badRequest().body(result);
+        }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> updateCard(
+            @RequestParam("uuid") String uuid,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "textContent", required = false) String textContent,
+            @RequestParam(value = "images", required = false) MultipartFile[] images,
+            @RequestParam(value = "video", required = false) MultipartFile video,
+            @RequestParam(value = "audio", required = false) MultipartFile audio,
+            @RequestParam(value = "isPublic", required = false) Boolean isPublic) throws Exception {
+        Card card = cardService.updateCard(uuid, title, textContent, images, video, audio, isPublic);
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", 200);
+        result.put("data", card);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/create-link-qr")
+    public ResponseEntity<?> createLinkQRCode(@RequestParam("url") String url) {
+        try {
+            String fileName = QRCodeGenerator.generateQRCodeImage(url, cardService.getUploadDir());
+            String qrCodeUrl = cardService.getBaseUrl() + "/uploads/" + fileName;
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 200);
+            result.put("data", Map.of("qrCodeUrl", qrCodeUrl));
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 500);
+            result.put("msg", e.getMessage());
+            return ResponseEntity.ok(result);
         }
     }
 }

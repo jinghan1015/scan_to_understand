@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外链跳转</title>
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: white; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; overflow-x: hidden; }
+        
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .glow-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        
+        .floating-item {
+            position: absolute;
+            font-size: 24px;
+            animation: floatItem 8s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        
+        .floating-item:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; font-size: 20px; }
+        .floating-item:nth-child(2) { top: 25%; right: 15%; animation-delay: -1s; font-size: 28px; }
+        .floating-item:nth-child(3) { top: 60%; left: 20%; animation-delay: -2s; font-size: 22px; }
+        .floating-item:nth-child(4) { top: 70%; right: 10%; animation-delay: -3s; font-size: 26px; }
+        .floating-item:nth-child(5) { top: 40%; left: 5%; animation-delay: -4s; font-size: 24px; }
+        .floating-item:nth-child(6) { top: 85%; right: 25%; animation-delay: -5s; font-size: 20px; }
+        
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-20px) rotate(15deg) scale(1.1); opacity: 0.8; }
+            50% { transform: translateY(-10px) rotate(-10deg) scale(1.2); opacity: 0.9; }
+            75% { transform: translateY(-25px) rotate(5deg) scale(1.1); opacity: 0.7; }
+        }
+        
+        .app-container { position: relative; z-index: 2; min-height: 100vh; padding-bottom: 100px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 20px; background: linear-gradient(135deg, rgba(147,197,253,0.8) 0%, rgba(191,219,254,0.9) 100%); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(59,130,246,0.1); position: sticky; top: 0; z-index: 100; }
+        .back-btn { width: 40px; height: 40px; background: rgba(255,255,255,0.8); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #1e3a8a; font-size: 18px; cursor: pointer; }
+        .header-title { font-size: 18px; font-weight: 600; color: #1e3a8a; letter-spacing: 2px; }
+
+        .form-container { padding: 20px; }
+        .form-card { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .section-label { color: #1e3a8a; font-size: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .form-input { width: 100%; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 14px 18px; color: #1e3a8a; font-size: 16px; outline: none; }
+        .form-input:focus { border-color: #3b82f6; }
+        .form-input::placeholder { color: #9ca3af; }
+
+        .link-preview { background: rgba(255,255,255,0.8); border: 1px solid rgba(59,130,246,0.15); border-radius: 12px; padding: 20px; margin-top: 15px; }
+        .link-preview-title { font-size: 14px; color: #4b5563; margin-bottom: 10px; }
+        .link-preview-url { font-size: 14px; color: #3b82f6; word-break: break-all; }
+
+        .privacy-buttons { display: flex; gap: 15px; margin-bottom: 25px; }
+        .privacy-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .privacy-btn.private { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); color: #4b5563; }
+        .privacy-btn.private.active { background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.5); color: #7c3aed; }
+        .privacy-btn.public { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); color: #4b5563; }
+        .privacy-btn.public.active { background: rgba(59,130,246,0.2); border-color: rgba(59,130,246,0.5); color: #3b82f6; }
+
+        .tips-box { background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+        .tips-title { font-size: 14px; color: #1e3a8a; font-weight: 600; margin-bottom: 8px; }
+        .tips-content { font-size: 13px; color: #1f2937; line-height: 1.6; }
+
+        .submit-btn { width: 100%; padding: 18px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border: 1px solid rgba(59,130,246,0.3); border-radius: 16px; color: #1e3a8a; font-size: 18px; font-weight: 600; letter-spacing: 4px; cursor: pointer; }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 999; }
+        .loading-spinner { width: 50px; height: 50px; border: 3px solid rgba(59,130,246,0.15); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border: 1px solid rgba(59,130,246,0.15); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; }
+        .qr-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .qr-title { font-size: 22px; font-weight: 700; color: #1e3a8a; }
+        .qr-body { padding: 25px; text-align: center; }
+        .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
+        .qr-image { width: 180px; height: 180px; display: block; }
+        .qr-footer { padding: 20px 25px; display: flex; gap: 12px; border-top: 1px solid rgba(59,130,246,0.1); }
+        .qr-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .qr-btn.primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
+        .qr-btn.secondary { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="glow-orbs">
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌸</div>
+        <div class="floating-item">⭐</div>
+        <div class="floating-item">🌼</div>
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌺</div>
+    </div>
+    
+    <div id="app" class="app-container">
+        <div class="header">
+            <div class="back-btn" @click="goBack">←</div>
+            <div class="header-title">外链跳转</div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <div class="form-container">
+            <div class="tips-box">
+                <div class="tips-title">💡 使用提示</div>
+                <div class="tips-content">将想要跳转的链接粘贴到下方输入框，生成二维码后，扫码即可跳转到该链接。</div>
+            </div>
+
+            <div class="form-card">
+                <div class="section-label"><span>📝</span><span>标题</span></div>
+                <input class="form-input" v-model="title" type="text" placeholder="请输入链接标题" />
+            </div>
+
+            <div class="form-card">
+                <div class="section-label"><span>🔗</span><span>目标链接</span></div>
+                <input class="form-input" v-model="targetUrl" type="text" placeholder="请输入要跳转的链接，如：https://www.example.com" />
+                <div v-if="targetUrl" class="link-preview">
+                    <div class="link-preview-title">链接预览</div>
+                    <div class="link-preview-url">{{ targetUrl }}</div>
+                </div>
+            </div>
+
+            <div class="privacy-buttons">
+                <button class="privacy-btn private" :class="{ active: !isPublic }" @click="isPublic = false">
+                    🔒 私密
+                </button>
+                <button class="privacy-btn public" :class="{ active: isPublic }" @click="isPublic = true">
+                    🌐 公开
+                </button>
+            </div>
+
+            <button class="submit-btn" @click="generateQRCode" :disabled="!isValidUrl()">
+                生成二维码
+            </button>
+        </div>
+
+        <div v-if="showLoading" class="loading-overlay">
+            <div class="loading-spinner"></div>
+        </div>
+
+        <div v-if="showQRModal" class="qr-modal">
+            <div class="qr-modal-content">
+                <div class="qr-header">
+                    <div class="qr-title">🎉 二维码已生成</div>
+                </div>
+                <div class="qr-body">
+                    <div class="qr-image-wrapper">
+                        <img v-if="qrCodeUrl" :src="qrCodeUrl" class="qr-image" />
+                    </div>
+                    <p style="color: #4b5563; font-size: 14px;">扫码跳转到目标链接</p>
+                </div>
+                <div class="qr-footer">
+                    <button class="qr-btn secondary" @click="showQRModal = false">关闭</button>
+                    <button class="qr-btn primary" @click="saveQRCode">保存图片</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
+    <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
+    <script src="common.js"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+
+        createApp({
+            setup() {
+                const title = ref('');
+                const targetUrl = ref('');
+                const isPublic = ref(true);
+                const showLoading = ref(false);
+                const showQRModal = ref(false);
+                const qrCodeUrl = ref('');
+
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    window.location.href = 'login.html';
+                }
+
+                const isValidUrl = () => {
+                    if (!targetUrl.value.trim()) return false;
+                    try {
+                        new URL(targetUrl.value);
+                        return true;
+                    } catch {
+                        return false;
+                    }
+                };
+
+                const generateQRCode = async () => {
+                    if (!isValidUrl()) {
+                        vant.showToast({ type: 'fail', message: '请输入有效的链接' });
+                        return;
+                    }
+                    showLoading.value = true;
+                    try {
+                        const formData = new FormData();
+                        formData.append('userId', userId);
+                        formData.append('title', title.value || '外链跳转');
+                        formData.append('textContent', targetUrl.value);
+                        formData.append('isPublic', isPublic.value.toString());
+                        
+                        const res = await fetch(`${BASE_URL}/card/create`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            qrCodeUrl.value = data.data.qrCodeUrl.startsWith('http') ? data.data.qrCodeUrl : BACKEND_URL + data.data.qrCodeUrl;
+                            showQRModal.value = true;
+                        } else {
+                            vant.showToast({ type: 'fail', message: data.msg || '生成失败' });
+                        }
+                    } catch (e) {
+                        vant.showToast({ type: 'fail', message: '网络错误' });
+                    }
+                    showLoading.value = false;
+                };
+
+                const saveQRCode = () => {
+                    if (!qrCodeUrl.value) return;
+                    const link = document.createElement('a');
+                    link.href = qrCodeUrl.value;
+                    link.download = `qrcode_link.png`;
+                    link.click();
+                };
+
+                const goBack = () => history.back();
+
+                return {
+                    title, targetUrl, isPublic, showLoading, showQRModal, qrCodeUrl,
+                    isValidUrl, generateQRCode, saveQRCode, goBack
+                };
+            }
+        }).use(vant).mount('#app');
+    </script>
+</body>
+</html>

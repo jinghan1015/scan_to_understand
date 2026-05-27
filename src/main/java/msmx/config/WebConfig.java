@@ -1,6 +1,11 @@
 package msmx.config;
 
+import msmx.entity.User;
+import msmx.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -11,32 +16,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Configuration
-public class WebConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer, CommandLineRunner {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
+    private static final Logger logger = LoggerFactory.getLogger(WebConfig.class);
+    private final UserRepository userRepository;
+
+    public WebConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 解析绝对路径
         Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         String absolutePath = uploadPath.toString();
 
-        System.out.println("===========================================");
-        System.out.println("静态资源映射配置:");
-        System.out.println("  配置路径: " + uploadDir);
-        System.out.println("  绝对路径: " + absolutePath);
-        System.out.println("  映射URL: /uploads/** -> file:" + absolutePath + File.separator);
-        System.out.println("===========================================");
-
-        // 确保目录存在
         File dir = new File(absolutePath);
         if (!dir.exists()) {
-            boolean created = dir.mkdirs();
-            System.out.println("创建上传目录: " + (created ? "成功" : "失败"));
+            dir.mkdirs();
         }
 
-        // 映射静态资源
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + absolutePath + File.separator);
     }
@@ -44,9 +45,31 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
+                .allowCredentials(true)
                 .maxAge(3600);
+    }
+
+    @Override
+    public void run(String... args) {
+        if (userRepository.findByUsername("admin") == null) {
+            User admin = new User();
+            admin.setUsername("admin");
+            admin.setPassword("admin");
+            admin.setNickname("管理员");
+            userRepository.save(admin);
+            logger.info("创建默认用户: admin / admin");
+        }
+        
+        if (userRepository.findByUsername("yusan") == null) {
+            User yusan = new User();
+            yusan.setUsername("yusan");
+            yusan.setPassword("123456");
+            yusan.setNickname("yusan");
+            userRepository.save(yusan);
+            logger.info("创建用户: yusan / 123456");
+        }
     }
 }

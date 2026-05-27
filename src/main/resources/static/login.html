@@ -15,7 +15,7 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(180deg, #0a0e27 0%, #13183a 50%, #0d1329 100%);
+            background: white;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             display: flex;
             align-items: center;
@@ -30,54 +30,44 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-image:
+                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
             background-size: 40px 40px;
             z-index: 0;
             pointer-events: none;
         }
 
-        .glow-orb {
+        .glow-orbs {
             position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: float 8s ease-in-out infinite;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
             pointer-events: none;
+            overflow: hidden;
         }
 
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: #00d4ff;
-            top: -100px;
-            right: -100px;
-            animation-delay: 0s;
+        .floating-item {
+            position: absolute;
+            font-size: 24px;
+            animation: floatItem 8s ease-in-out infinite;
+            opacity: 0.6;
         }
 
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: #7c3aed;
-            bottom: -50px;
-            left: -50px;
-            animation-delay: -3s;
-        }
+        .floating-item:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; font-size: 20px; }
+        .floating-item:nth-child(2) { top: 25%; right: 15%; animation-delay: -1s; font-size: 28px; }
+        .floating-item:nth-child(3) { top: 60%; left: 20%; animation-delay: -2s; font-size: 22px; }
+        .floating-item:nth-child(4) { top: 70%; right: 10%; animation-delay: -3s; font-size: 26px; }
+        .floating-item:nth-child(5) { top: 40%; left: 5%; animation-delay: -4s; font-size: 24px; }
+        .floating-item:nth-child(6) { top: 85%; right: 25%; animation-delay: -5s; font-size: 20px; }
 
-        @keyframes float {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(30px, -20px) scale(1.05);
-            }
-            50% {
-                transform: translate(-20px, 20px) scale(0.95);
-            }
-            75% {
-                transform: translate(25px, 25px) scale(1.02);
-            }
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-20px) rotate(15deg) scale(1.1); opacity: 0.8; }
+            50% { transform: translateY(-10px) rotate(-10deg) scale(1.2); opacity: 0.9; }
+            75% { transform: translateY(-25px) rotate(5deg) scale(1.1); opacity: 0.7; }
         }
 
         .login-container {
@@ -89,12 +79,12 @@
         }
 
         .login-card {
-            background: rgba(10, 14, 39, 0.7);
+            background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(59,130,246,0.2);
             border-radius: 24px;
             padding: 40px 32px;
-            box-shadow: 0 0 60px rgba(0, 212, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(59,130,246,0.15);
             position: relative;
             overflow: hidden;
         }
@@ -106,19 +96,19 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #00d4ff, #7c3aed, transparent);
+            background: linear-gradient(90deg, transparent, #60a5fa, #93c5fd, transparent);
         }
 
         .back-btn {
             width: 44px;
             height: 44px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
+            border: 1px solid rgba(59,130,246,0.2);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #8892b0;
+            color: #1e3a8a;
             font-size: 20px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -126,9 +116,9 @@
         }
 
         .back-btn:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: rgba(0, 212, 255, 0.3);
-            color: #00d4ff;
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+            border-color: rgba(59,130,246,0.4);
+            color: #1e3a8a;
         }
 
         .back-btn:active {
@@ -138,12 +128,12 @@
         .logo {
             width: 70px;
             height: 70px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #7c3aed 100%);
             border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 10px 40px rgba(59,130,246,0.3);
             margin: 0 auto 28px;
         }
 
@@ -151,14 +141,14 @@
             content: '';
             width: 24px;
             height: 24px;
-            border: 2px solid white;
+            border: 2px solid #1e3a8a;
             transform: rotate(45deg);
         }
 
         .title {
             font-size: 28px;
             font-weight: 700;
-            color: #ffffff;
+            color: #1e3a8a;
             text-align: center;
             margin-bottom: 8px;
             letter-spacing: 2px;
@@ -166,7 +156,7 @@
 
         .subtitle {
             font-size: 14px;
-            color: #8892b0;
+            color: #4b5563;
             text-align: center;
             margin-bottom: 40px;
             letter-spacing: 1px;
@@ -179,7 +169,7 @@
         .form-label {
             display: block;
             font-size: 13px;
-            color: #8892b0;
+            color: #4b5563;
             margin-bottom: 10px;
             font-weight: 500;
             letter-spacing: 1px;
@@ -188,10 +178,10 @@
         .form-input {
             width: 100%;
             padding: 16px 18px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(59,130,246,0.2);
             border-radius: 12px;
-            color: #ffffff;
+            color: #1e3a8a;
             font-size: 15px;
             outline: none;
             transition: all 0.3s ease;
@@ -199,36 +189,36 @@
         }
 
         .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: #9ca3af;
         }
 
         .form-input:focus {
-            border-color: rgba(0, 212, 255, 0.5);
-            background: rgba(0, 212, 255, 0.05);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+            border-color: rgba(59,130,246,0.5);
+            background: white;
+            box-shadow: 0 0 20px rgba(59,130,246,0.2);
         }
 
         .submit-btn {
             width: 100%;
             padding: 18px;
             margin-top: 12px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #7c3aed 100%);
             border: none;
             border-radius: 14px;
-            color: #0a0e27;
+            color: #1e3a8a;
             font-size: 16px;
             font-weight: 700;
             letter-spacing: 3px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(59,130,246,0.3);
             position: relative;
             overflow: hidden;
         }
 
         .submit-btn:hover {
             transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 0 60px rgba(0, 212, 255, 0.5);
+            box-shadow: 0 15px 60px rgba(59,130,246,0.4);
         }
 
         .submit-btn:active {
@@ -269,7 +259,7 @@
         }
 
         .switch-link-text {
-            color: #8892b0;
+            color: #4b5563;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -278,12 +268,12 @@
         }
 
         .switch-link-text:hover {
-            color: #00d4ff;
+            color: #3b82f6;
             transform: translateY(-1px);
         }
 
         .switch-link-text span {
-            color: #00d4ff;
+            color: #3b82f6;
             font-weight: 600;
             margin-left: 6px;
         }
@@ -362,8 +352,14 @@
 
 <body>
     <div class="grid-overlay"></div>
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
+    <div class="glow-orbs">
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌸</div>
+        <div class="floating-item">⭐</div>
+        <div class="floating-item">🌼</div>
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌺</div>
+    </div>
 
     <div class="login-container" id="app">
         <div class="login-card">
@@ -422,7 +418,7 @@
 
                     loading.value = true;
                     try {
-                        const response = await fetch(`${BASE_URL}/api/user/login`, {
+                        const response = await fetch(`${BASE_URL}/user/login`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -435,10 +431,9 @@
 
                         const result = await response.json();
                         if (response.ok && result.code === 200) {
-                            vant.Toast.success('登录成功');
                             localStorage.setItem('userId', result.data.userId);
                             localStorage.setItem('username', result.data.nickname);
-                            window.location.href = 'index.html';
+                            window.location.replace('index.html');
                         } else {
                             vant.Toast.fail(result.msg || '登录失败');
                         }

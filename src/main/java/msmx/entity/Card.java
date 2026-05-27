@@ -30,5 +30,13 @@ public class Card {
 
     private String qrCodeUrl;
 
+    @Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isPublic = false;
+
+    private Integer likeCount = 0;
+    private Integer favoriteCount = 0;
+    private Integer viewCount = 0;
+
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

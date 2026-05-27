@@ -15,12 +15,12 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%);
+            background: white;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             overflow-x: hidden;
         }
 
-        #particles-container {
+        #tech-bg {
             position: fixed;
             top: 0;
             left: 0;
@@ -28,46 +28,52 @@
             height: 100%;
             z-index: 0;
             pointer-events: none;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .glow-orbs {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
             overflow: hidden;
         }
 
-        .particle {
+        .floating-item {
             position: absolute;
-            border-radius: 50%;
-            cursor: pointer;
-            pointer-events: auto;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), 
-                        box-shadow 0.3s ease,
-                        opacity 0.3s ease;
+            font-size: 24px;
+            animation: floatItem 8s ease-in-out infinite;
+            opacity: 0.6;
         }
 
-        .particle:hover {
-            transform: scale(1.15);
-        }
+        .floating-item:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; font-size: 20px; }
+        .floating-item:nth-child(2) { top: 25%; right: 15%; animation-delay: -1s; font-size: 28px; }
+        .floating-item:nth-child(3) { top: 60%; left: 20%; animation-delay: -2s; font-size: 22px; }
+        .floating-item:nth-child(4) { top: 70%; right: 10%; animation-delay: -3s; font-size: 26px; }
+        .floating-item:nth-child(5) { top: 40%; left: 5%; animation-delay: -4s; font-size: 24px; }
+        .floating-item:nth-child(6) { top: 85%; right: 25%; animation-delay: -5s; font-size: 20px; }
 
-        .particle.popping {
-            animation: popOut 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-
-        @keyframes popOut {
-            0% { transform: scale(1); }
-            30% { transform: scale(1.4); }
-            100% { transform: scale(0); opacity: 0; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        @keyframes floatReverse {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(-5deg); }
-        }
-
-        @keyframes gentleSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-20px) rotate(15deg) scale(1.1); opacity: 0.8; }
+            50% { transform: translateY(-10px) rotate(-10deg) scale(1.2); opacity: 0.9; }
+            75% { transform: translateY(-25px) rotate(5deg) scale(1.1); opacity: 0.7; }
         }
 
         .app-container {
@@ -82,90 +88,80 @@
             text-align: center;
         }
 
-        .hero-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 30px;
-            color: #0891b2;
-            font-size: 12px;
-            letter-spacing: 3px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.1);
-        }
-
-        .hero-logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 40px;
-            position: relative;
-            animation: gentleSpin 20s linear infinite;
-        }
-
-        .hero-logo::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid transparent;
-            border-top-color: #06b6d4;
-            border-right-color: #06b6d4;
-            border-radius: 50%;
-            animation: gentleSpin 8s linear infinite reverse;
-        }
-
-        .hero-logo::after {
-            content: '';
-            position: absolute;
-            width: 70%;
-            height: 70%;
-            top: 15%;
-            left: 15%;
-            border: 3px solid transparent;
-            border-bottom-color: #8b5cf6;
-            border-left-color: #8b5cf6;
-            border-radius: 50%;
-            animation: gentleSpin 6s linear infinite;
-        }
-
-        .hero-logo-inner {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            top: 25%;
-            left: 25%;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
+        .title-wrapper {
+            display: inline-flex;
+            align-items: flex-start;
             justify-content: center;
-            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3);
+            position: relative;
         }
 
-        .hero-logo-inner::before {
-            content: '';
-            width: 20px;
-            height: 20px;
-            border: 2px solid white;
-            transform: rotate(45deg);
+        .logo-container {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin-left: 10px;
+            margin-top: -5px;
+        }
+
+        .logo-canvas {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            transform: translate(-50%, -50%);
+        }
+
+        .orbit-1 {
+            width: 70px;
+            height: 70px;
+            border-top-color: rgba(0, 212, 255, 0.6);
+            border-right-color: rgba(0, 212, 255, 0.4);
+            animation: rotate1 3s linear infinite;
+        }
+
+        .orbit-2 {
+            width: 90px;
+            height: 90px;
+            border-top-color: rgba(124, 58, 237, 0.5);
+            border-right-color: rgba(124, 58, 237, 0.3);
+            animation: rotate2 5s linear infinite reverse;
+        }
+
+        @keyframes rotate1 {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes rotate2 {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .hero-title {
-            font-size: 42px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0891b2 0%, #7c3aed 100%);
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #00d4ff 50%, #7c3aed 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             letter-spacing: 6px;
+            text-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
         }
 
         .hero-subtitle {
-            color: #64748b;
-            font-size: 16px;
+            color: #8892b0;
+            font-size: 15px;
             letter-spacing: 4px;
             font-weight: 300;
         }
@@ -178,7 +174,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 24px;
+            gap: 20px;
             max-width: 800px;
             margin: 0 auto;
             flex-wrap: wrap;
@@ -188,39 +184,69 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             padding: 24px 20px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%);
+            border: 3px solid rgba(255, 255, 255, 0.4);
             border-radius: 20px;
             min-width: 100px;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(59, 130, 246, 0.5), 0 0 60px rgba(30, 64, 175, 0.3);
+        }
+
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.5), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-item:hover::before {
+            left: 100%;
         }
 
         .feature-item:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.15);
-            border-color: rgba(6, 182, 212, 0.3);
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(0, 212, 255, 1);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.8), 0 0 120px rgba(124, 58, 237, 0.4);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .feature-item:active {
+            transform: translateY(-2px) scale(0.98);
         }
 
         .feature-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.7), rgba(124, 58, 237, 0.7));
+            border: 3px solid rgba(0, 212, 255, 0.8);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+        }
+
+        .feature-item:hover .feature-icon {
+            box-shadow: 0 0 50px rgba(0, 212, 255, 1), 0 0 80px rgba(124, 58, 237, 0.5);
+            border-color: rgba(0, 212, 255, 1);
         }
 
         .feature-title {
-            color: #334155;
-            font-size: 14px;
-            font-weight: 600;
+            color: #374151;
+            font-size: 17px;
+            font-weight: 800;
+            text-shadow: none;
         }
 
         .action-section {
@@ -239,14 +265,14 @@
             flex: 1;
             padding: 20px 36px;
             border: none;
-            border-radius: 60px;
+            border-radius: 14px;
             font-size: 16px;
             font-weight: 600;
             letter-spacing: 3px;
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -254,44 +280,56 @@
         }
 
         .btn-create {
-            background: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%);
-            color: white;
-            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.35);
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            color: #0a0e27;
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
         }
 
         .btn-scan {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(6, 182, 212, 0.3);
-            color: #0891b2;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
         }
 
         .btn-create:hover {
             transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.45);
+            box-shadow: 0 0 60px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-create:active {
+            transform: translateY(-1px) scale(0.98);
         }
 
         .btn-scan:hover {
             transform: translateY(-4px) scale(1.02);
-            background: white;
-            border-color: #06b6d4;
-            box-shadow: 0 20px 50px rgba(6, 182, 212, 0.2);
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 212, 255, 0.2);
         }
 
-        .btn-create::before {
+        .btn-scan:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+
+        .btn-create::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s ease;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: scale(0);
         }
 
-        .btn-create:hover::before {
-            left: 100%;
+        .btn-create:active::after {
+            animation: ripple 0.4s ease-out;
+        }
+
+        @keyframes ripple {
+            from { transform: scale(0); opacity: 1; }
+            to { transform: scale(40); opacity: 0; }
         }
 
         .action-btn .icon {
@@ -310,11 +348,10 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 16px 30px;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 18px 30px;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(6, 182, 212, 0.1);
-            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid rgba(96, 165, 250, 0.2);
         }
 
         .tabbar-item {
@@ -322,20 +359,36 @@
             flex-direction: column;
             align-items: center;
             gap: 6px;
-            color: #94a3b8;
+            color: #4b5563;
             text-decoration: none;
-            transition: all 0.3s ease;
             cursor: pointer;
-            padding: 8px 20px;
-            border-radius: 16px;
+            padding: 10px 24px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .tabbar-item:hover {
-            background: rgba(6, 182, 212, 0.08);
+            background: rgba(96, 165, 250, 0.1);
+            color: #1e3a8a;
+        }
+
+        .tabbar-item:active {
+            transform: scale(0.95);
         }
 
         .tabbar-item.active {
-            color: #06b6d4;
+            color: #60a5fa;
+        }
+
+        .tabbar-item.active::before {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            width: 24px;
+            height: 3px;
+            background: linear-gradient(90deg, #60a5fa, #93c5fd);
+            border-radius: 3px;
         }
 
         .tabbar-icon {
@@ -352,79 +405,528 @@
             letter-spacing: 1px;
         }
 
-        .click-hint {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 12px 24px;
-            border-radius: 30px;
-            color: #64748b;
+        .create-tab-item {
+            position: relative;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-top: -20px;
+        }
+
+        .create-tab-item:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 212, 255, 0.5);
+        }
+
+        .create-tab-item:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        .create-icon {
+            font-size: 28px;
+            color: #0a0e27;
+            font-weight: 300;
+        }
+
+        .community-section {
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .search-section {
+            padding: 0 10px 20px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.1);
+        }
+
+        .search-icon {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+            margin-right: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 15px;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-clear-btn {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-clear-btn:hover {
+            background: rgba(255, 100, 100, 0.2);
+            color: #ff6464;
+        }
+
+        .search-results-info {
+            padding: 0 10px 15px;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 13px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            animation: bounce 2s ease-in-out infinite;
-            z-index: 50;
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-10px); }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 0 10px;
         }
 
-        .click-hint.hidden {
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #3b82f6;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 22px;
+            background: linear-gradient(180deg, #00d4ff, #7c3aed);
+            border-radius: 2px;
+        }
+
+        .card-count {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 13px;
+            color: #00d4ff;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 280px);
+            gap: 25px;
+            padding: 0 80px;
+            justify-content: center;
+        }
+
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(2, 260px);
+                padding: 0 40px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 25px;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+        }
+
+        .card-item {
+            background: linear-gradient(135deg, rgba(147, 197, 253, 0.3) 0%, rgba(191, 219, 254, 0.4) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-item:hover {
+            border-color: rgba(0, 212, 255, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            width: 100%;
+            min-height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-image-placeholder {
+            font-size: 48px;
+            color: rgba(59, 130, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .simple-text-label {
+            font-size: 64px;
+            font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 12px;
+            text-shadow: 0 6px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .card-content {
+            padding: 11px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-desc {
+            font-size: 9px;
+            color: #4b5563;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-author {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .card-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(59,130,246,0.1);
+        }
+
+        .action-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px 7px;
+            border-radius: 6px;
+        }
+
+        .action-item:hover {
+            background: rgba(59,130,246,0.1);
+        }
+
+        .action-icon {
+            width: 12px;
+            height: 12px;
+            color: #6b7280;
+        }
+
+        .action-count {
+            color: #6b7280;
+            font-size: 9px;
+        }
+
+        .action-item.liked .action-icon {
+            color: #ff6464;
+        }
+
+        .action-item.liked .action-count {
+            color: #ff6464;
+        }
+
+        .action-item.favorited .action-icon {
+            color: #f59e0b;
+        }
+
+        .action-item.favorited .action-count {
+            color: #f59e0b;
+        }
+
+        .qr-btn {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, rgba(96,165,250,0.2), rgba(147,197,253,0.3));
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .qr-btn:hover {
+            background: linear-gradient(135deg, rgba(96,165,250,0.3), rgba(147,197,253,0.4));
+            border-color: rgba(59,130,246,0.5);
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 60px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border: 1px solid rgba(59,130,246,0.15); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; }
+        .qr-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .qr-modal-title { font-size: 18px; font-weight: 600; color: #1e3a8a; }
+        .qr-modal-close { width: 32px; height: 32px; background: rgba(96,165,250,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
+        .qr-modal-body { padding: 25px; text-align: center; }
+        .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
+        .qr-image { width: 180px; height: 180px; }
+        .qr-tip { color: #4b5563; font-size: 13px; }
     </style>
 </head>
 
 <body>
-    <div id="particles-container"></div>
-    
-    <div class="click-hint" id="clickHint">✨ 点击漂浮的气泡试试</div>
+    <canvas id="tech-bg"></canvas>
+    <div class="grid-overlay"></div>
+    <div class="glow-orbs">
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌸</div>
+        <div class="floating-item">⭐</div>
+        <div class="floating-item">🌼</div>
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌺</div>
+    </div>
 
     <div id="app" class="app-container">
         <div class="hero-section">
-            <div class="hero-badge">✨ SMART DIGITAL CARD</div>
-            <div class="hero-logo">
-                <div class="hero-logo-inner"></div>
+            <div class="title-wrapper">
+                <h1 class="hero-title">码上明晓</h1>
+                <div class="logo-container" @click="generateQR">
+                    <canvas id="logoCanvas" class="logo-canvas" width="50" height="50"></canvas>
+                    <div class="orbit orbit-1"></div>
+                    <div class="orbit orbit-2"></div>
+                </div>
             </div>
-            <h1 class="hero-title">码上明晓</h1>
             <p class="hero-subtitle">数字化名片 · 扫码即达</p>
         </div>
 
         <div class="features-section">
             <div class="features-row">
-                <div class="feature-item">
-                    <div class="feature-icon">🖼️</div>
-                    <div class="feature-title">图片</div>
+                <div class="feature-item" @click="goToSimpleText">
+                    <div class="feature-icon">📝</div>
+                    <div class="feature-title">我要简易文字</div>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🎬</div>
-                    <div class="feature-title">视频</div>
+                <div class="feature-item" @click="goToLinkJump">
+                    <div class="feature-icon">🔗</div>
+                    <div class="feature-title">我要外链跳转</div>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-icon">🎙️</div>
-                    <div class="feature-title">语音</div>
+                <div class="feature-item" @click="goToCreateCard">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">我要视听图文</div>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📲</div>
-                    <div class="feature-title">二维码</div>
+                <div class="feature-item" @click="scanQR">
+                    <div class="feature-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 4h14"/>
+                            <path d="M12 1v6"/>
+                            <path d="M12 17v6"/>
+                            <path d="M19 20H5"/>
+                            <path d="M20 12h6"/>
+                            <path d="M8 12H2"/>
+                            <path d="M16 12h6"/>
+                            <path d="M2 12h6"/>
+                        </svg>
+                    </div>
+                    <div class="feature-title">我要扫二维码</div>
                 </div>
             </div>
         </div>
 
-        <div class="action-section">
-            <div class="action-buttons">
-                <button class="action-btn btn-create" @click="createCard">
-                    <span class="icon">+</span>新建卡片
-                </button>
-                <button class="action-btn btn-scan" @click="scanQR">
-                    <span class="icon">📷</span>扫码
-                </button>
+        <div class="community-section">
+            <div class="search-section">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input
+                        type="text"
+                        class="search-input"
+                        v-model="searchKeyword"
+                        placeholder="搜索卡片标题..."
+                        @keyup.enter="searchCards"
+                    />
+                    <span
+                        v-if="searchKeyword"
+                        class="search-clear-btn"
+                        @click="clearSearch"
+                    >×</span>
+                </div>
+                <div v-if="searchKeyword && filteredCards.length >= 0" class="search-results-info">
+                    搜索 "{{ searchKeyword }}" 找到 {{ filteredCards.length }} 个结果
+                </div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-title">🌟 社区广场</div>
+                <div class="card-count">{{ filteredCards.length }} 个卡片</div>
+            </div>
+
+            <div v-if="loading" class="loading-spinner"></div>
+
+            <div v-else-if="filteredCards.length === 0" class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>{{ searchKeyword ? '没有找到相关卡片' : '还没有人分享卡片' }}</p>
+                <p>{{ searchKeyword ? '试试其他关键词吧' : '成为第一个分享者吧！' }}</p>
+            </div>
+
+            <div v-else class="cards-grid">
+                <div class="card-item" v-for="card in filteredCards" :key="card.id">
+                    <div class="card-image" @click="handleCardClick(card)">
+                        <img v-if="getFirstImage(card)" :src="getFirstImage(card)" alt="封面" />
+                        <div v-else-if="isLinkCard(card)" class="card-image-placeholder">
+                            <span>🔗</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title" @click="viewCard(card)">{{ card.title }}</div>
+                        <div class="card-desc" @click="viewCard(card)">{{ card.textContent || '暂无描述' }}</div>
+                        <div class="card-meta">
+                            <span class="card-author">用户 {{ card.userId }}</span>
+                            <span class="card-time">{{ formatTime(card.createdAt) }}</span>
+                        </div>
+                        <div class="card-actions">
+                            <div class="action-left">
+                                <div
+                                    class="action-item"
+                                    :class="{ liked: getCardLiked(card.uuid) }"
+                                    @click.stop="toggleLike(card)"
+                                >
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                    </svg>
+                                    <span class="action-count">{{ card.likeCount || 0 }}</span>
+                                </div>
+                                <div
+                                    class="action-item"
+                                    :class="{ favorited: getCardFavorited(card.uuid) }"
+                                    @click.stop="toggleFavorite(card)"
+                                >
+                                    <svg class="action-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    <span class="action-count">{{ card.favoriteCount || 0 }}</span>
+                                </div>
+                                <div class="action-item" @click.stop="viewCard(card)">
+                                    <span class="action-icon">👁️</span>
+                                    <span class="action-count">{{ card.viewCount || 0 }}</span>
+                                </div>
+                            </div>
+                            <div class="qr-btn" @click.stop="showCardQR(card)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                    <rect x="14" y="14" width="4" height="4"/>
+                                    <rect x="19" y="14" width="2" height="2"/>
+                                    <rect x="14" y="19" width="2" height="2"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -440,6 +942,21 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="showQRModal" class="qr-modal">
+            <div class="qr-modal-content">
+                <div class="qr-modal-header">
+                    <span class="qr-modal-title">名片二维码</span>
+                    <span class="qr-modal-close" @click="closeQRModal">×</span>
+                </div>
+                <div class="qr-modal-body">
+                    <div class="qr-image-wrapper">
+                        <img v-if="currentQRUrl" :src="currentQRUrl" class="qr-image" />
+                    </div>
+                    <div class="qr-tip">微信扫码查看名片</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
@@ -447,10 +964,26 @@
     <script src="common.js"></script>
 
     <script>
-        const { createApp } = Vue;
+        const { createApp, ref, onMounted, computed } = Vue;
 
         const app = createApp({
             setup() {
+                const cards = ref([]);
+                const loading = ref(true);
+                const searchKeyword = ref('');
+                const showQRModal = ref(false);
+                const currentQRUrl = ref('');
+
+                const filteredCards = computed(() => {
+                    if (!searchKeyword.value.trim()) {
+                        return cards.value;
+                    }
+                    const keyword = searchKeyword.value.toLowerCase();
+                    return cards.value.filter(card =>
+                        card.title && card.title.toLowerCase().includes(keyword)
+                    );
+                });
+
                 const createCard = () => {
                     window.location.href = 'create-card.html';
                 };
@@ -460,207 +993,424 @@
                 const goToMine = () => {
                     window.location.href = 'mine.html';
                 };
+
+                const generateQR = () => {
+                    const canvas = document.getElementById('logoCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const size = 50;
+                    const moduleSize = 4;
+                    const padding = 5;
+
+                    ctx.fillStyle = '#1e3a8a';
+                    ctx.fillRect(0, 0, size, size);
+
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.8)';
+                    for (let row = 0; row < 10; row++) {
+                        for (let col = 0; col < 10; col++) {
+                            if (Math.random() > 0.5) {
+                                ctx.fillRect(
+                                    padding + col * moduleSize,
+                                    padding + row * moduleSize,
+                                    moduleSize - 1,
+                                    moduleSize - 1
+                                );
+                            }
+                        }
+                    }
+
+                    ctx.fillStyle = 'rgba(124, 58, 237, 0.9)';
+                    ctx.fillRect(padding, padding, moduleSize * 3, moduleSize * 3);
+                    ctx.fillStyle = '#1e3a8a';
+                    ctx.fillRect(padding + 1, padding + 1, moduleSize, moduleSize);
+
+                    ctx.fillStyle = 'rgba(124, 58, 237, 0.9)';
+                    ctx.fillRect(padding + moduleSize * 7, padding, moduleSize * 3, moduleSize * 3);
+                    ctx.fillStyle = '#1e3a8a';
+                    ctx.fillRect(padding + moduleSize * 7 + 1, padding + 1, moduleSize, moduleSize);
+
+                    ctx.fillStyle = 'rgba(124, 58, 237, 0.9)';
+                    ctx.fillRect(padding, padding + moduleSize * 7, moduleSize * 3, moduleSize * 3);
+                    ctx.fillStyle = '#1e3a8a';
+                    ctx.fillRect(padding + 1, padding + moduleSize * 7 + 1, moduleSize, moduleSize);
+
+                    ctx.fillStyle = 'rgba(0, 212, 255, 0.9)';
+                    ctx.fillRect(padding + moduleSize * 2, padding + moduleSize * 2, moduleSize * 6, moduleSize * 6);
+                };
+
+                const fetchCards = async () => {
+                    loading.value = true;
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/all`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            cards.value = data.data;
+                        }
+                    } catch (e) {
+                        console.error('获取卡片失败:', e);
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                const getFirstImage = (card) => {
+                    if (!card.imageUrls) return null;
+                    try {
+                        const images = JSON.parse(card.imageUrls);
+                        return images.length > 0 ? images[0] : null;
+                    } catch {
+                        return null;
+                    }
+                };
+
+                const isSimpleTextCard = (card) => {
+                    if (!card.imageUrls || card.imageUrls === '[]') {
+                        if (!card.videoUrls || card.videoUrls === '[]') {
+                            if (!card.audioUrls || card.audioUrls === '[]') {
+                                if (!card.textContent || !card.textContent.startsWith('http')) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                };
+
+                const isLinkCard = (card) => {
+                    return card.textContent && (card.textContent.startsWith('http://') || card.textContent.startsWith('https://'));
+                };
+
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '';
+                    const date = new Date(timeStr);
+                    const now = new Date();
+                    const diff = now - date;
+                    if (diff < 60000) return '刚刚';
+                    if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前';
+                    if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前';
+                    if (diff < 604800000) return Math.floor(diff / 86400000) + '天前';
+                    return date.toLocaleDateString();
+                };
+
+                const viewCard = (card) => {
+                    window.open(`card-detail.html?uuid=${card.uuid}`, '_blank');
+                };
+
+                const likedCards = ref({});
+                const favoritedCards = ref({});
+
+                const loadUserLikes = async () => {
+                    const userId = localStorage.getItem('userId');
+                    if (!userId) return;
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/likes?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            data.data.forEach(card => {
+                                likedCards.value[card.uuid] = true;
+                            });
+                            localStorage.setItem('likedCards', JSON.stringify(likedCards.value));
+                        }
+                    } catch (e) {
+                        console.error('加载点赞状态失败:', e);
+                    }
+                };
+
+                const loadUserFavorites = async () => {
+                    const userId = localStorage.getItem('userId');
+                    if (!userId) return;
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/favorites?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            data.data.forEach(card => {
+                                favoritedCards.value[card.uuid] = true;
+                            });
+                            localStorage.setItem('favoritedCards', JSON.stringify(favoritedCards.value));
+                        }
+                    } catch (e) {
+                        console.error('加载收藏状态失败:', e);
+                    }
+                };
+
+                const initLikedStatus = () => {
+                    const saved = localStorage.getItem('likedCards');
+                    if (saved) {
+                        try {
+                            const savedLikes = JSON.parse(saved);
+                            Object.keys(savedLikes).forEach(uuid => {
+                                if (savedLikes[uuid]) {
+                                    likedCards.value[uuid] = true;
+                                }
+                            });
+                        } catch (e) {
+                            console.error('解析保存的点赞状态失败:', e);
+                        }
+                    }
+                };
+
+                const initFavoritedStatus = () => {
+                    const saved = localStorage.getItem('favoritedCards');
+                    if (saved) {
+                        try {
+                            const savedFavorites = JSON.parse(saved);
+                            Object.keys(savedFavorites).forEach(uuid => {
+                                if (savedFavorites[uuid]) {
+                                    favoritedCards.value[uuid] = true;
+                                }
+                            });
+                        } catch (e) {
+                            console.error('解析保存的收藏状态失败:', e);
+                        }
+                    }
+                };
+
+                const toggleLike = async (card) => {
+                    const currentUserId = localStorage.getItem('userId');
+                    if (!currentUserId) {
+                        vant.showToast({ type: 'fail', message: '请先登录' });
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/like`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `cardUuid=${card.uuid}&userId=${currentUserId}`
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            card.likeCount = data.data.count;
+                            likedCards.value[card.uuid] = data.data.liked;
+                            localStorage.setItem('likedCards', JSON.stringify(likedCards.value));
+                            if (data.data.liked) {
+                                vant.showToast({ type: 'success', message: '点赞成功' });
+                            } else {
+                                vant.showToast({ type: 'success', message: '取消点赞' });
+                            }
+                            localStorage.setItem('likedCard', Date.now().toString());
+                        }
+                    } catch (e) {
+                        console.error('点赞失败:', e);
+                    }
+                };
+
+                const toggleFavorite = async (card) => {
+                    const currentUserId = localStorage.getItem('userId');
+                    if (!currentUserId) {
+                        vant.showToast({ type: 'fail', message: '请先登录' });
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/favorite`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `cardUuid=${card.uuid}&userId=${currentUserId}`
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            card.favoriteCount = data.data.count;
+                            favoritedCards.value[card.uuid] = data.data.favorited;
+                            localStorage.setItem('favoritedCards', JSON.stringify(favoritedCards.value));
+                            if (data.data.favorited) {
+                                vant.showToast({ type: 'success', message: '收藏成功' });
+                            } else {
+                                vant.showToast({ type: 'success', message: '取消收藏' });
+                            }
+                            localStorage.setItem('favoritedCard', Date.now().toString());
+                        }
+                    } catch (e) {
+                        console.error('收藏失败:', e);
+                    }
+                };
+
+                const getCardLiked = (uuid) => {
+                    return likedCards.value[uuid] || false;
+                };
+
+                const getCardFavorited = (uuid) => {
+                    return favoritedCards.value[uuid] || false;
+                };
+
+                const searchCards = () => {
+                    console.log('搜索关键词:', searchKeyword.value);
+                };
+
+                const clearSearch = () => {
+                    searchKeyword.value = '';
+                };
+
+                const goToSimpleText = () => {
+                    window.location.href = 'simple-text.html';
+                };
+
+                const goToLinkJump = () => {
+                    window.location.href = 'link-jump.html';
+                };
+
+                const goToCreateCard = () => {
+                    window.location.href = 'create-card.html';
+                };
+
+                const showCardQR = (card) => {
+                    if (card.qrCodeUrl) {
+                        const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : BACKEND_URL + card.qrCodeUrl;
+                        currentQRUrl.value = qrUrl;
+                        showQRModal.value = true;
+                    } else {
+                        vant.showToast({ type: 'fail', message: '二维码未生成' });
+                    }
+                };
+
+                const handleCardClick = (card) => {
+                    if (card.textContent && (card.textContent.startsWith('http://') || card.textContent.startsWith('https://'))) {
+                        window.open(card.textContent, '_blank');
+                    } else {
+                        viewCard(card);
+                    }
+                };
+
+                const closeQRModal = () => {
+                    showQRModal.value = false;
+                    currentQRUrl.value = '';
+                };
+
                 const userId = localStorage.getItem('userId');
                 if (!userId) {
                     window.location.href = 'login.html';
                 }
-                return { createCard, scanQR, goToMine };
+
+                const handleStorageChange = (e) => {
+                    if (e.key === 'likedCard') {
+                        initLikedStatus();
+                        loadUserLikes();
+                    } else if (e.key === 'favoritedCard') {
+                        initFavoritedStatus();
+                        loadUserFavorites();
+                    }
+                };
+
+                onMounted(() => {
+                    generateQR();
+                    fetchCards();
+                    initLikedStatus();
+                    initFavoritedStatus();
+                    loadUserLikes();
+                    loadUserFavorites();
+                    window.addEventListener('storage', handleStorageChange);
+                });
+
+                return {
+                    cards,
+                    filteredCards,
+                    loading,
+                    searchKeyword,
+                    showQRModal,
+                    currentQRUrl,
+                    createCard,
+                    scanQR,
+                    goToMine,
+                    goToSimpleText,
+                    goToLinkJump,
+                    goToCreateCard,
+                    generateQR,
+                    getFirstImage,
+                    formatTime,
+                    viewCard,
+                    toggleLike,
+                    toggleFavorite,
+                    getCardLiked,
+                    getCardFavorited,
+                    searchCards,
+                    clearSearch,
+                    showCardQR,
+                    closeQRModal,
+                    handleCardClick,
+                    isSimpleTextCard,
+                    isLinkCard
+                };
             }
         });
 
         app.use(vant);
         app.mount('#app');
 
+        const canvas = document.getElementById('tech-bg');
+        const ctx = canvas.getContext('2d');
+        let width, height;
         const particles = [];
-        const container = document.getElementById('particles-container');
-        const clickHint = document.getElementById('clickHint');
-        let hintHidden = false;
-
-        const colors = [
-            { bg: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.4)' },
-            { bg: 'rgba(139, 92, 246, 0.12)', border: 'rgba(139, 92, 246, 0.35)' },
-            { bg: 'rgba(236, 72, 153, 0.1)', border: 'rgba(236, 72, 153, 0.3)' },
-            { bg: 'rgba(34, 197, 94, 0.1)', border: 'rgba(34, 197, 94, 0.3)' },
-            { bg: 'rgba(251, 191, 36, 0.12)', border: 'rgba(251, 191, 36, 0.35)' },
-            { bg: 'rgba(99, 102, 241, 0.1)', border: 'rgba(99, 102, 241, 0.3)' },
-            { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.35)' },
-            { bg: 'rgba(168, 85, 247, 0.1)', border: 'rgba(168, 85, 247, 0.3)' },
-        ];
-
-        const emojis = ['🌸', '✨', '💫', '🌺', '💎', '🎀', '🌟', '🦋', '🌈', '☁️', '🍃', '💧'];
+        const particleCount = 120;
 
         class Particle {
             constructor() {
-                this.element = document.createElement('div');
-                this.element.className = 'particle';
-                this.size = Math.random() * 50 + 30;
-                this.x = Math.random() * (window.innerWidth - this.size);
-                this.y = Math.random() * (window.innerHeight - this.size);
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
                 this.vx = (Math.random() - 0.5) * 0.5;
                 this.vy = (Math.random() - 0.5) * 0.5;
-                this.rotation = Math.random() * 360;
-                this.rotationSpeed = (Math.random() - 0.5) * 2;
-                this.bobOffset = Math.random() * Math.PI * 2;
-                this.bobSpeed = Math.random() * 0.02 + 0.01;
-                this.colorSet = colors[Math.floor(Math.random() * colors.length)];
-                this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                this.isPopping = false;
-
-                this.init();
+                this.radius = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.5 + 0.1;
             }
-
-            init() {
-                this.element.style.width = `${this.size}px`;
-                this.element.style.height = `${this.size}px`;
-                this.element.style.left = `${this.x}px`;
-                this.element.style.top = `${this.y}px`;
-                this.element.style.background = this.colorSet.bg;
-                this.element.style.border = `2px solid ${this.colorSet.border}`;
-                this.element.style.boxShadow = `0 8px 32px ${this.colorSet.border}`;
-                this.element.innerHTML = `<span style="font-size: ${this.size * 0.4}px; display: flex; align-items: center; justify-content: center; height: 100%;">${this.emoji}</span>`;
-
-                const floatAnim = Math.random() > 0.5 ? 'float' : 'floatReverse';
-                this.element.style.animation = `${floatAnim} ${6 + Math.random() * 4}s ease-in-out infinite`;
-                this.element.style.animationDelay = `${Math.random() * 2}s`;
-
-                this.element.addEventListener('click', (e) => this.handleClick(e));
-                this.element.addEventListener('mousemove', (e) => this.handleHover(e));
-
-                container.appendChild(this.element);
-            }
-
-            handleClick(e) {
-                if (this.isPopping) return;
-                this.isPopping = true;
-                this.element.classList.add('popping');
-
-                if (!hintHidden) {
-                    hintHidden = true;
-                    clickHint.classList.add('hidden');
-                }
-
-                setTimeout(() => {
-                    this.respawn();
-                }, 600);
-            }
-
-            handleHover(e) {
-                if (this.isPopping) return;
-                const rect = this.element.getBoundingClientRect();
-                const centerX = rect.left + rect.width / 2;
-                const centerY = rect.top + rect.height / 2;
-                const dx = e.clientX - centerX;
-                const dy = e.clientY - centerY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < this.size * 1.5) {
-                    const force = (this.size * 1.5 - dist) / (this.size * 1.5) * 0.5;
-                    this.vx += (dx / dist) * force;
-                    this.vy += (dy / dist) * force;
-                }
-            }
-
-            respawn() {
-                const side = Math.floor(Math.random() * 4);
-                switch (side) {
-                    case 0: // top
-                        this.x = Math.random() * window.innerWidth;
-                        this.y = -this.size;
-                        break;
-                    case 1: // right
-                        this.x = window.innerWidth + this.size;
-                        this.y = Math.random() * window.innerHeight;
-                        break;
-                    case 2: // bottom
-                        this.x = Math.random() * window.innerWidth;
-                        this.y = window.innerHeight + this.size;
-                        break;
-                    case 3: // left
-                        this.x = -this.size;
-                        this.y = Math.random() * window.innerHeight;
-                        break;
-                }
-
-                this.size = Math.random() * 50 + 30;
-                this.colorSet = colors[Math.floor(Math.random() * colors.length)];
-                this.emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                this.vx = (Math.random() - 0.5) * 1;
-                this.vy = (Math.random() - 0.5) * 1;
-                this.rotation = Math.random() * 360;
-                this.isPopping = false;
-
-                this.element.style.width = `${this.size}px`;
-                this.element.style.height = `${this.size}px`;
-                this.element.style.background = this.colorSet.bg;
-                this.element.style.border = `2px solid ${this.colorSet.border}`;
-                this.element.style.boxShadow = `0 8px 32px ${this.colorSet.border}`;
-                this.element.innerHTML = `<span style="font-size: ${this.size * 0.4}px; display: flex; align-items: center; justify-content: center; height: 100%;">${this.emoji}</span>`;
-                this.element.classList.remove('popping');
-
-                this.updatePosition();
-            }
-
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.vx *= 0.99;
-                this.vy *= 0.99;
-
-                if (this.vx > 2) this.vx = 2;
-                if (this.vx < -2) this.vx = -2;
-                if (this.vy > 2) this.vy = 2;
-                if (this.vy < -2) this.vy = -2;
-
-                if (this.x < -this.size * 2) this.x = window.innerWidth + this.size;
-                if (this.x > window.innerWidth + this.size) this.x = -this.size * 2;
-                if (this.y < -this.size * 2) this.y = window.innerHeight + this.size;
-                if (this.y > window.innerHeight + this.size) this.y = -this.size * 2;
-
-                this.rotation += this.rotationSpeed;
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
             }
-
-            updatePosition() {
-                this.element.style.left = `${this.x}px`;
-                this.element.style.top = `${this.y}px`;
-                this.element.style.transform = `rotate(${this.rotation}deg)`;
-            }
-
             draw() {
-                this.update();
-                this.updatePosition();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 212, 255, ${this.alpha})`;
+                ctx.fill();
             }
         }
 
-        function initParticles() {
-            const particleCount = Math.min(20, Math.floor(window.innerWidth / 80));
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function init() {
+            resize();
             for (let i = 0; i < particleCount; i++) {
                 particles.push(new Particle());
             }
         }
 
+        function drawConnections() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.15 * (1 - dist / 120)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
         function animate() {
+            ctx.clearRect(0, 0, width, height);
             for (const particle of particles) {
+                particle.update();
                 particle.draw();
             }
+            drawConnections();
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('resize', () => {
-            if (particles.length < Math.min(20, Math.floor(window.innerWidth / 80))) {
-                particles.push(new Particle());
-            }
-        });
-
-        initParticles();
+        window.addEventListener('resize', resize);
+        init();
         animate();
-
-        setTimeout(() => {
-            if (!hintHidden) {
-                clickHint.style.opacity = '0';
-                setTimeout(() => clickHint.classList.add('hidden'), 500);
-                hintHidden = true;
-            }
-        }, 8000);
     </script>
 </body>
 

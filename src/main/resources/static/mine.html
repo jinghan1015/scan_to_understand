@@ -1,607 +1,162 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的卡片</title>
+    <title>我的</title>
     <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/vant@4/lib/index.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            overflow-x: hidden;
-        }
-
-        .glow-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.25;
-            animation: float 10s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .orb-1 {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, #00d4ff 0%, transparent 70%);
-            top: -100px;
-            left: -100px;
-        }
-
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
-            bottom: -80px;
-            right: -80px;
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            50% {
-                transform: translate(20px, -20px) scale(1.05);
-            }
-        }
-
-        .grid-bg {
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; background: white; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; overflow-x: hidden; }
+        
+        .grid-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-image:
-                linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
+                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
+            background-size: 40px 40px;
             z-index: 0;
+            pointer-events: none;
         }
-
-        .app-container {
-            position: relative;
-            z-index: 2;
-            min-height: 100vh;
-            padding-bottom: 100px;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px 25px;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .back-btn:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: rgba(0, 212, 255, 0.3);
-        }
-
-        .header-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: 2px;
-        }
-
-        .logout-btn {
-            padding: 8px 16px;
-            background: rgba(255, 100, 100, 0.15);
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            border-radius: 8px;
-            color: #ff6464;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 100, 100, 0.25);
-            border-color: rgba(255, 100, 100, 0.5);
-        }
-
-        .user-info {
-            padding: 30px 25px 20px;
-        }
-
-        .user-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-name {
-            font-size: 20px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 8px;
-        }
-
-        .user-stats {
-            display: flex;
-            gap: 20px;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-        }
-
-        .stat-item span {
-            color: #00d4ff;
-            font-weight: 600;
-        }
-
-        .cards-section {
-            padding: 25px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-            letter-spacing: 2px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 18px;
-            background: linear-gradient(180deg, #00d4ff, #7c3aed);
-            border-radius: 2px;
-        }
-
-        .cards-count {
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 12px;
-            color: #00d4ff;
-        }
-
-        .cards-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .card-item:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .card-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .card-desc {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.5);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            line-height: 1.5;
-        }
-
-        .card-footer {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 10px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .card-btn {
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .card-btn-outline {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .card-btn-outline:hover {
-            border-color: rgba(0, 212, 255, 0.5);
-            color: #00d4ff;
-        }
-
-        .card-btn-primary {
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            color: white;
-            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
-        }
-
-        .card-btn-primary:hover {
-            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .card-btn-danger {
-            background: rgba(255, 100, 100, 0.15);
-            border: 1px solid rgba(255, 100, 100, 0.3);
-            color: #ff6464;
-        }
-
-        .card-btn-danger:hover {
-            background: rgba(255, 100, 100, 0.25);
-            border-color: rgba(255, 100, 100, 0.5);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 30px;
-        }
-
-        .empty-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 25px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-
-        .empty-text {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 15px;
-            margin-bottom: 25px;
-        }
-
-        .empty-btn {
-            display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            border-radius: 12px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            letter-spacing: 2px;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .empty-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 80px 30px;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #00d4ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-text {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-        }
-
-        .qr-modal {
+        
+        .glow-orbs {
             position: fixed;
+            width: 100%;
+            height: 100%;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-
-        .qr-modal-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 360px;
+            z-index: 0;
+            pointer-events: none;
             overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .floating-item {
+            position: absolute;
+            font-size: 24px;
+            animation: floatItem 8s ease-in-out infinite;
+            opacity: 0.6;
+        }
+        
+        .floating-item:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; font-size: 20px; }
+        .floating-item:nth-child(2) { top: 25%; right: 15%; animation-delay: -1s; font-size: 28px; }
+        .floating-item:nth-child(3) { top: 60%; left: 20%; animation-delay: -2s; font-size: 22px; }
+        .floating-item:nth-child(4) { top: 70%; right: 10%; animation-delay: -3s; font-size: 26px; }
+        .floating-item:nth-child(5) { top: 40%; left: 5%; animation-delay: -4s; font-size: 24px; }
+        .floating-item:nth-child(6) { top: 85%; right: 25%; animation-delay: -5s; font-size: 20px; }
+        
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-20px) rotate(15deg) scale(1.1); opacity: 0.8; }
+            50% { transform: translateY(-10px) rotate(-10deg) scale(1.2); opacity: 0.9; }
+            75% { transform: translateY(-25px) rotate(5deg) scale(1.1); opacity: 0.7; }
         }
 
-        .qr-header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
+        .app-container { position: relative; z-index: 2; min-height: 100vh; padding-bottom: 100px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .back-btn { width: 40px; height: 40px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #1e3a8a; font-size: 18px; cursor: pointer; }
+        .header-title { font-size: 18px; font-weight: 600; color: #1e3a8a; letter-spacing: 2px; }
+        .logout-btn { padding: 8px 16px; background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; color: #dc2626; font-size: 13px; cursor: pointer; }
 
-        .qr-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #fff;
-        }
+        .user-info { padding: 25px; }
+        .user-card { display: flex; align-items: center; gap: 15px; padding: 20px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 16px; border: 1px solid rgba(59,130,246,0.2); }
+        .avatar { width: 70px; height: 70px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #7c3aed 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+        .user-details { flex: 1; }
+        .user-name { font-size: 18px; font-weight: 600; color: #1e3a8a; margin-bottom: 8px; }
+        .user-stats { display: flex; gap: 20px; }
+        .stat-item { display: flex; align-items: center; gap: 5px; color: #4b5563; font-size: 13px; }
+        .stat-item span { color: #3b82f6; font-weight: 600; }
 
-        .qr-close {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .tabs-container { padding: 0 20px; margin-bottom: 20px; }
+        .tabs { display: flex; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 12px; padding: 4px; border: 1px solid rgba(59,130,246,0.15); }
+        .tab-item { flex: 1; padding: 12px 8px; text-align: center; border-radius: 10px; font-size: 14px; color: #4b5563; cursor: pointer; transition: all 0.3s ease; }
+        .tab-item.active { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); color: #1e3a8a; font-weight: 600; }
 
-        .qr-close:hover {
-            background: rgba(255, 100, 100, 0.2);
-            color: #ff6464;
-        }
+        .sub-tabs { display: flex; gap: 10px; margin-top: 15px; padding: 0 5px; }
+        .sub-tab-item { padding: 8px 16px; border-radius: 20px; font-size: 12px; color: #4b5563; cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.15); }
+        .sub-tab-item.active { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); color: #1e3a8a; border-color: rgba(59,130,246,0.3); }
 
-        .qr-body {
-            padding: 25px;
-            text-align: center;
-        }
+        .cards-section { padding: 0 20px; }
+        .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .section-title { font-size: 16px; font-weight: 600; color: #1e3a8a; }
+        .cards-count { font-size: 12px; color: #6b7280; }
 
-        .qr-image-wrapper {
-            background: white;
-            padding: 15px;
-            border-radius: 16px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
+        .loading-state { text-align: center; padding: 40px; }
+        .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(59,130,246,0.15); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: #4b5563; font-size: 14px; }
 
-        .qr-image {
-            width: 200px;
-            height: 200px;
-            display: block;
-        }
+        .empty-state { text-align: center; padding: 40px 20px; }
+        .empty-icon { font-size: 50px; margin-bottom: 15px; opacity: 0.5; }
+        .empty-text { color: #4b5563; font-size: 14px; margin-bottom: 15px; }
+        .empty-btn { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 25px; color: #1e3a8a; font-size: 14px; font-weight: 600; text-decoration: none; }
 
-        .qr-tip {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
+        .cards-list { display: flex; flex-direction: column; gap: 15px; }
+        .card-item { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; overflow: hidden; }
+        .card-header { padding: 16px; }
+        .card-info { display: flex; gap: 12px; }
+        .card-thumbnail { width: 60px; height: 60px; background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid rgba(59,130,246,0.15); }
+        .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        .card-content { flex: 1; min-width: 0; }
+        .card-title { font-size: 15px; font-weight: 600; color: #1e3a8a; margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card-desc { font-size: 12px; color: #4b5563; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card-meta { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+        .privacy-badge { padding: 2px 8px; border-radius: 10px; font-size: 10px; }
+        .privacy-badge.public { background: rgba(59,130,246,0.2); color: #3b82f6; }
+        .privacy-badge.private { background: rgba(124,58,237,0.2); color: #7c3aed; }
+        .card-time { font-size: 10px; color: #9ca3af; }
 
-        .qr-share-section {
-            text-align: left;
-            margin-bottom: 20px;
-        }
+        .card-footer { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid rgba(59,130,246,0.1); }
+        .card-btn { flex: 1; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .card-btn-outline { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
+        .card-btn-primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); color: #1e3a8a; border: 1px solid rgba(59,130,246,0.2); }
+        .card-btn-danger { background: linear-gradient(135deg, rgba(252,165,165,0.3) 0%, rgba(254,202,202,0.4) 100%); border: 1px solid rgba(239,68,68,0.3); color: #dc2626; }
 
-        .qr-link-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            margin-bottom: 8px;
-        }
+        .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; border: 1px solid rgba(59,130,246,0.15); }
+        .qr-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .qr-title { font-size: 18px; font-weight: 600; color: #1e3a8a; }
+        .qr-close { width: 32px; height: 32px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
+        .qr-body { padding: 25px; text-align: center; }
+        .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
+        .qr-image { width: 180px; height: 180px; }
+        .qr-tip { color: #4b5563; font-size: 12px; margin-bottom: 15px; }
+        .qr-share-section { text-align: left; }
+        .qr-link-label { color: #4b5563; font-size: 12px; margin-bottom: 8px; }
+        .qr-link-box { display: flex; gap: 10px; }
+        .qr-link-input { flex: 1; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 10px 12px; color: #1e3a8a; font-size: 12px; }
+        .copy-btn { padding: 10px 20px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 10px; color: #1e3a8a; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .save-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 15px; }
 
-        .qr-link-box {
-            display: flex;
-            gap: 10px;
-        }
+        .tabbar-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
+        .custom-tabbar { display: flex; justify-content: space-around; padding: 15px 30px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(59,130,246,0.1); }
+        .tabbar-item { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #4b5563; cursor: pointer; padding: 8px 20px; border-radius: 10px; }
+        .tabbar-item.active { color: #3b82f6; }
+        .tabbar-icon { font-size: 24px; }
+        .tabbar-text { font-size: 12px; }
 
-        .qr-link-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 10px;
-            padding: 12px 15px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 12px;
-            outline: none;
-        }
-
-        .copy-btn {
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .copy-btn:active {
-            transform: scale(0.95);
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .save-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.25);
-        }
-
-        .tabbar-wrapper {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-        }
-
-        .custom-tabbar {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 15px 30px;
-            background: rgba(10, 10, 15, 0.9);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .tabbar-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255, 255, 255, 0.5);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .tabbar-item.active {
-            color: #00d4ff;
-        }
-
-        .tabbar-icon {
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-
-        .tabbar-text {
-            font-size: 11px;
-            letter-spacing: 1px;
-        }
+        .create-tab-item { width: 52px; height: 52px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-top: -15px; box-shadow: 0 8px 25px rgba(59,130,246,0.3); }
+        .create-icon { font-size: 26px; color: #1e3a8a; }
     </style>
 </head>
-
 <body>
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
-    <div class="grid-bg"></div>
-
+    <div class="grid-overlay"></div>
+    <div class="glow-orbs">
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌸</div>
+        <div class="floating-item">⭐</div>
+        <div class="floating-item">🌼</div>
+        <div class="floating-item">✨</div>
+        <div class="floating-item">🌺</div>
+    </div>
+    
     <div id="app" class="app-container">
         <div class="header">
             <div class="back-btn" @click="goBack">←</div>
-            <div class="header-title">我的卡片</div>
+            <div class="header-title">我的</div>
             <div class="logout-btn" @click="logout">退出</div>
         </div>
 
@@ -611,18 +166,32 @@
                 <div class="user-details">
                     <div class="user-name">{{ nickname || '用户' }}</div>
                     <div class="user-stats">
-                        <div class="stat-item">
-                            <span>{{ cards.length }}</span> 张卡片
-                        </div>
+                        <div class="stat-item"><span>{{ myCards.length }}</span> 我的卡片</div>
+                        <div class="stat-item"><span>{{ likedCards.length }}</span> 已点赞</div>
+                        <div class="stat-item"><span>{{ favoritedCards.length }}</span> 已收藏</div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <div class="tabs-container">
+            <div class="tabs">
+                <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="switchTab('my')">我的卡片</div>
+                <div class="tab-item" :class="{ active: activeTab === 'liked' }" @click="switchTab('liked')">点赞</div>
+                <div class="tab-item" :class="{ active: activeTab === 'favorited' }" @click="switchTab('favorited')">收藏</div>
+            </div>
+
+            <div v-if="activeTab === 'my'" class="sub-tabs">
+                <div class="sub-tab-item" :class="{ active: privacyFilter === 'all' }" @click="privacyFilter = 'all'">全部</div>
+                <div class="sub-tab-item" :class="{ active: privacyFilter === 'public' }" @click="privacyFilter = 'public'">🌐 公开</div>
+                <div class="sub-tab-item" :class="{ active: privacyFilter === 'private' }" @click="privacyFilter = 'private'">🔒 私密</div>
+            </div>
+        </div>
+
         <div class="cards-section">
             <div class="section-header">
-                <div class="section-title">卡片列表</div>
-                <div class="cards-count">{{ cards.length }} 个</div>
+                <div class="section-title">{{ activeTab === 'my' ? '我的卡片' : activeTab === 'liked' ? '点赞的卡片' : '收藏的卡片' }}</div>
+                <div class="cards-count">{{ filteredCards.length }} 个</div>
             </div>
 
             <div v-if="loading" class="loading-state">
@@ -630,24 +199,38 @@
                 <div class="loading-text">加载中...</div>
             </div>
 
-            <div v-else-if="cards.length === 0" class="empty-state">
-                <div class="empty-icon">📋</div>
-                <div class="empty-text">还没有创建任何卡片</div>
-                <a href="create-card.html" class="empty-btn">创建第一张卡片</a>
+            <div v-else-if="filteredCards.length === 0" class="empty-state">
+                <div class="empty-icon">{{ activeTab === 'my' ? '📋' : activeTab === 'liked' ? '❤️' : '⭐' }}</div>
+                <div class="empty-text">
+                    {{ activeTab === 'my' ? '还没有创建任何卡片' : activeTab === 'liked' ? '还没有点赞任何卡片' : '还没有收藏任何卡片' }}
+                </div>
+                <a v-if="activeTab === 'my'" href="create-card.html" class="empty-btn">创建卡片</a>
             </div>
 
             <div v-else class="cards-list">
-                <div class="card-item" v-for="card in cards" :key="card.id">
+                <div class="card-item" v-for="card in filteredCards" :key="card.id || card.uuid">
                     <div class="card-header">
                         <div class="card-info">
-                            <div class="card-title">{{ card.title }}</div>
-                            <div class="card-desc">{{ card.textContent }}</div>
+                            <div class="card-thumbnail">
+                                <img v-if="getFirstImage(card)" :src="getFirstImage(card)" />
+                                <span v-else>🖼️</span>
+                            </div>
+                            <div class="card-content">
+                                <div class="card-title">{{ card.title }}</div>
+                                <div class="card-desc">{{ card.textContent || '暂无描述' }}</div>
+                                <div class="card-meta">
+                                    <span v-if="card.isPublic !== undefined" :class="['privacy-badge', card.isPublic ? 'public' : 'private']">
+                                        {{ card.isPublic ? '公开' : '私密' }}
+                                    </span>
+                                    <span class="card-time">{{ formatTime(card.createdAt) }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="card-btn card-btn-outline" @click.stop="showQR(card)">二维码</button>
+                        <button v-if="activeTab === 'my'" class="card-btn card-btn-outline" @click.stop="showQR(card)">二维码</button>
                         <button class="card-btn card-btn-primary" @click.stop="openDetail(card)">查看</button>
-                        <button class="card-btn card-btn-danger" @click.stop="deleteCard(card)">删除</button>
+                        <button v-if="activeTab === 'my'" class="card-btn card-btn-danger" @click.stop="deleteCard(card)">删除</button>
                     </div>
                 </div>
             </div>
@@ -693,14 +276,19 @@
     <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
     <script src="common.js"></script>
+
     <script>
-        const { createApp, ref, onMounted } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
 
         const app = createApp({
             setup() {
-                const cards = ref([]);
+                const myCards = ref([]);
+                const likedCards = ref([]);
+                const favoritedCards = ref([]);
                 const loading = ref(true);
                 const nickname = ref(localStorage.getItem('nickname') || '');
+                const activeTab = ref('my');
+                const privacyFilter = ref('all');
                 const showQRModal = ref(false);
                 const currentQRUrl = ref('');
                 const currentShareUrl = ref('');
@@ -709,19 +297,79 @@
                 const userId = localStorage.getItem('userId');
                 if (!userId) { location.href = 'login.html'; }
 
-                const fetchCards = async () => {
-                    loading.value = true;
+                const filteredCards = computed(() => {
+                    let cards = [];
+                    if (activeTab.value === 'my') {
+                        cards = myCards.value;
+                        if (privacyFilter.value === 'public') {
+                            cards = cards.filter(c => c.isPublic);
+                        } else if (privacyFilter.value === 'private') {
+                            cards = cards.filter(c => !c.isPublic);
+                        }
+                    } else if (activeTab.value === 'liked') {
+                        cards = likedCards.value;
+                    } else if (activeTab.value === 'favorited') {
+                        cards = favoritedCards.value;
+                    }
+                    return cards;
+                });
+
+                const fetchMyCards = async () => {
                     try {
-                        const res = await fetch(`${BASE_URL}/api/card/my?userId=${userId}`);
+                        const res = await fetch(`${BASE_URL}/card/my?userId=${userId}`);
                         const data = await res.json();
                         if (data.code === 200) {
-                            cards.value = data.data;
+                            myCards.value = data.data;
                         }
                     } catch (e) { console.error(e); }
-                    finally { loading.value = false; }
                 };
 
-                onMounted(fetchCards);
+                const fetchLikedCards = async () => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/likes?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            likedCards.value = data.data;
+                        }
+                    } catch (e) { console.error(e); }
+                };
+
+                const fetchFavoritedCards = async () => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/favorites?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            favoritedCards.value = data.data;
+                        }
+                    } catch (e) { console.error(e); }
+                };
+
+                const fetchAllData = async () => {
+                    loading.value = true;
+                    await Promise.all([fetchMyCards(), fetchLikedCards(), fetchFavoritedCards()]);
+                    loading.value = false;
+                };
+
+                onMounted(fetchAllData);
+
+                const switchTab = (tab) => {
+                    activeTab.value = tab;
+                    privacyFilter.value = 'all';
+                };
+
+                const getFirstImage = (card) => {
+                    if (!card.imageUrls) return null;
+                    try {
+                        const images = JSON.parse(card.imageUrls);
+                        return images.length > 0 ? images[0] : null;
+                    } catch { return null; }
+                };
+
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '';
+                    const date = new Date(timeStr);
+                    return date.toLocaleDateString('zh-CN');
+                };
 
                 const openDetail = (card) => {
                     window.open(`card-detail.html?uuid=${card.uuid}`, '_blank');
@@ -735,7 +383,7 @@
                         currentShareUrl.value = `${NGROK_URL}/card-detail.html?uuid=${card.uuid}`;
                         showQRModal.value = true;
                     } else {
-                        alert('二维码未生成');
+                        vant.showToast({ type: 'fail', message: '二维码未生成' });
                     }
                 };
 
@@ -749,9 +397,9 @@
                 const copyShareUrl = async () => {
                     try {
                         await navigator.clipboard.writeText(currentShareUrl.value);
-                        alert('链接已复制');
+                        vant.showToast({ type: 'success', message: '链接已复制' });
                     } catch (e) {
-                        alert('复制失败');
+                        vant.showToast({ type: 'fail', message: '复制失败' });
                     }
                 };
 
@@ -765,35 +413,39 @@
                 const deleteCard = async (card) => {
                     if (!confirm('确定要删除这个名片吗？')) return;
                     try {
-                        const res = await fetch(`${BASE_URL}/api/card/${card.uuid}`, {
-                            method: 'DELETE'
-                        });
+                        const res = await fetch(`${BASE_URL}/card/${card.uuid}`, { method: 'DELETE' });
                         const data = await res.json();
                         if (data.code === 200) {
-                            alert('删除成功');
-                            fetchCards();
+                            vant.showToast({ type: 'success', message: '删除成功' });
+                            await fetchAllData();
                         } else {
-                            alert(data.msg || '删除失败');
+                            vant.showToast({ type: 'fail', message: data.msg || '删除失败' });
                         }
                     } catch (e) {
-                        alert('网络错误');
+                        vant.showToast({ type: 'fail', message: '网络错误' });
                     }
                 };
 
-                const goBack = () => { history.back(); };
-                const goToHome = () => { location.href = 'index.html'; };
+                const goBack = () => history.back();
+                const goToHome = () => location.href = 'index.html';
+                const createCard = () => location.href = 'create-card.html';
                 const logout = () => {
                     localStorage.removeItem('userId');
                     localStorage.removeItem('nickname');
                     location.href = 'login.html';
                 };
 
-                return { cards, loading, nickname, NGROK_URL, showQRModal, currentQRUrl, currentShareUrl, openDetail, showQR, closeQRModal, copyShareUrl, saveQRCode, deleteCard, goBack, goToHome, logout };
+                return {
+                    myCards, likedCards, favoritedCards, loading, nickname, activeTab, privacyFilter,
+                    filteredCards, showQRModal, currentQRUrl, currentShareUrl, NGROK_URL,
+                    switchTab, getFirstImage, formatTime, openDetail, showQR, closeQRModal,
+                    copyShareUrl, saveQRCode, deleteCard, goBack, goToHome, createCard, logout
+                };
             }
         });
+
         app.use(vant);
         app.mount('#app');
     </script>
 </body>
-
 </html>

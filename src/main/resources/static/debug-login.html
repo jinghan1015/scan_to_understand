@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试登录</title>
+</head>
+<body>
+    <h1>调试信息</h1>
+    <div id="debug"></div>
+
+    <script src="common.js"></script>
+    <script>
+        const debug = document.getElementById('debug');
+        debug.innerHTML = `
+            <p>BASE_URL: <strong>${BASE_URL}</strong></p>
+            <p>当前URL: <strong>${window.location.href}</strong></p>
+            <p>localStorage userId: <strong>${localStorage.getItem('userId') || '无'}</strong></p>
+            <p>localStorage username: <strong>${localStorage.getItem('username') || '无'}</strong></p>
+            <hr>
+            <button onclick="testApi()">测试API</button>
+            <button onclick="goToIndex()">跳转首页</button>
+            <div id="result"></div>
+        `;
+
+        async function testApi() {
+            const result = document.getElementById('result');
+            result.innerHTML = '测试中...';
+            try {
+                const res = await fetch(`${BASE_URL}/user/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: 'admin', password: 'admin' })
+                });
+                const data = await res.json();
+                result.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                console.log('API响应:', data);
+            } catch (e) {
+                result.innerHTML = `<p style="color:red">错误: ${e.message}</p>`;
+                console.error('API错误:', e);
+            }
+        }
+
+        function goToIndex() {
+            console.log('准备跳转到 index.html');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
