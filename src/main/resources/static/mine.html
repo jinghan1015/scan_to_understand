@@ -9,20 +9,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: white; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; overflow-x: hidden; }
         
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
         .glow-orbs {
             position: fixed;
             width: 100%;
@@ -96,9 +82,9 @@
 
         .cards-list { display: flex; flex-direction: column; gap: 15px; }
         .card-item { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 16px; overflow: hidden; }
-        .card-header { padding: 16px; }
-        .card-info { display: flex; gap: 12px; }
-        .card-thumbnail { width: 60px; height: 60px; background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; border: 1px solid rgba(59,130,246,0.15); }
+        .card-header { padding: 16px; display: flex; align-items: flex-start; gap: 12px; }
+        .card-image-area { flex-shrink: 0; }
+        .card-thumbnail { width: 60px; height: 60px; background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid rgba(59,130,246,0.15); }
         .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
         .card-content { flex: 1; min-width: 0; }
         .card-title { font-size: 15px; font-weight: 600; color: #1e3a8a; margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -108,19 +94,27 @@
         .privacy-badge.public { background: rgba(59,130,246,0.2); color: #3b82f6; }
         .privacy-badge.private { background: rgba(124,58,237,0.2); color: #7c3aed; }
         .card-time { font-size: 10px; color: #9ca3af; }
+        .card-qr-area { flex-shrink: 0; }
+        .card-qr-thumb { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; cursor: pointer; border: 1px solid rgba(59,130,246,0.2); }
 
-        .card-footer { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid rgba(59,130,246,0.1); }
-        .card-btn { flex: 1; padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .card-btn-outline { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
-        .card-btn-primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); color: #1e3a8a; border: 1px solid rgba(59,130,246,0.2); }
-        .card-btn-danger { background: linear-gradient(135deg, rgba(252,165,165,0.3) 0%, rgba(254,202,202,0.4) 100%); border: 1px solid rgba(239,68,68,0.3); color: #dc2626; }
+        .card-footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-top: 1px solid rgba(59,130,246,0.1); }
+        .card-action-btn { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(59,130,246,0.2); display: flex; align-items: center; gap: 6px; }
+        .card-action-btn.view { background: rgba(255,255,255,0.8); color: #3b82f6; padding: 10px; }
+        .card-action-btn.view:hover { background: rgba(59,130,246,0.1); }
+        .card-action-btn.edit { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); color: #1e3a8a; border-color: rgba(59,130,246,0.3); }
+        .card-action-btn.edit:hover { opacity: 0.9; transform: translateY(-1px); }
+        .card-action-btn.delete { background: rgba(252,165,165,0.3); color: #dc2626; border-color: rgba(239,68,68,0.3); padding: 10px; }
+        .card-action-btn.delete:hover { background: rgba(252,165,165,0.5); }
+        .view-icon { width: 16px; height: 16px; }
+        .delete-icon { width: 16px; height: 16px; }
 
         .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; border: 1px solid rgba(59,130,246,0.15); }
-        .qr-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid rgba(59,130,246,0.1); }
-        .qr-title { font-size: 18px; font-weight: 600; color: #1e3a8a; }
-        .qr-close { width: 32px; height: 32px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
-        .qr-body { padding: 25px; text-align: center; }
+        .qr-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .qr-modal-title { font-size: 18px; font-weight: 600; color: #1e3a8a; }
+        .qr-modal-close { width: 32px; height: 32px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
+        .qr-modal-body { padding: 25px; text-align: center; }
+        .qr-card-title { font-size: 18px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; }
         .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
         .qr-image { width: 180px; height: 180px; }
         .qr-tip { color: #4b5563; font-size: 12px; margin-bottom: 15px; }
@@ -129,7 +123,10 @@
         .qr-link-box { display: flex; gap: 10px; }
         .qr-link-input { flex: 1; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 10px 12px; color: #1e3a8a; font-size: 12px; }
         .copy-btn { padding: 10px 20px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 10px; color: #1e3a8a; font-size: 13px; font-weight: 600; cursor: pointer; }
-        .save-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 15px; }
+        .qr-actions { display: flex; gap: 12px; margin-top: 15px; }
+        .qr-action-btn { flex: 1; padding: 14px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; }
+        .qr-action-btn:hover { background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); }
+        .action-icon { width: 18px; height: 18px; }
 
         .tabbar-wrapper { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100; }
         .custom-tabbar { display: flex; justify-content: space-around; padding: 15px 30px; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(59,130,246,0.1); }
@@ -208,29 +205,47 @@
             </div>
 
             <div v-else class="cards-list">
-                <div class="card-item" v-for="card in filteredCards" :key="card.id || card.uuid">
+                <div class="card-item" v-for="card in filteredCards" :key="card.id || card.uuid" @click="openDetail(card)">
                     <div class="card-header">
-                        <div class="card-info">
+                        <div v-if="getFirstImage(card)" class="card-image-area">
                             <div class="card-thumbnail">
-                                <img v-if="getFirstImage(card)" :src="getFirstImage(card)" />
-                                <span v-else>🖼️</span>
+                                <img :src="getFirstImage(card)" />
                             </div>
-                            <div class="card-content">
-                                <div class="card-title">{{ card.title }}</div>
-                                <div class="card-desc">{{ card.textContent || '暂无描述' }}</div>
-                                <div class="card-meta">
-                                    <span v-if="card.isPublic !== undefined" :class="['privacy-badge', card.isPublic ? 'public' : 'private']">
-                                        {{ card.isPublic ? '公开' : '私密' }}
-                                    </span>
-                                    <span class="card-time">{{ formatTime(card.createdAt) }}</span>
-                                </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">{{ card.title }}</div>
+                            <div class="card-desc">{{ card.textContent || '暂无描述' }}</div>
+                            <div class="card-meta">
+                                <span v-if="card.isPublic !== undefined" :class="['privacy-badge', card.isPublic ? 'public' : 'private']">
+                                    {{ card.isPublic ? '公开' : '私密' }}
+                                </span>
+                                <span class="card-time">{{ formatTime(card.createdAt) }}</span>
                             </div>
+                        </div>
+                        <div v-if="activeTab === 'my' && card.qrCodeUrl" class="card-qr-area">
+                            <img :src="(card.qrCodeUrl.startsWith('http') ? '' : BACKEND_URL) + card.qrCodeUrl" class="card-qr-thumb" @click.stop="showQR(card)" />
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button v-if="activeTab === 'my'" class="card-btn card-btn-outline" @click.stop="showQR(card)">二维码</button>
-                        <button class="card-btn card-btn-primary" @click.stop="openDetail(card)">查看</button>
-                        <button v-if="activeTab === 'my'" class="card-btn card-btn-danger" @click.stop="deleteCard(card)">删除</button>
+                        <button class="card-action-btn view" @click.stop="openDetail(card)">
+                            <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10 9 9 9 8 9"/>
+                            </svg>
+                        </button>
+                        <button v-if="activeTab === 'my'" class="card-action-btn edit" @click.stop="openEdit(card)">
+                            <span>编辑</span>
+                        </button>
+                        <button v-if="activeTab === 'my'" class="card-action-btn delete" @click.stop="deleteCard(card)">
+                            <svg class="delete-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 6h18"/>
+                                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -249,13 +264,13 @@
             </div>
         </div>
 
-        <div class="qr-modal" v-if="showQRModal">
+        <div v-if="showQRModal" class="qr-modal">
             <div class="qr-modal-content">
-                <div class="qr-header">
-                    <span class="qr-title">名片二维码</span>
-                    <span class="qr-close" @click="closeQRModal">×</span>
+                <div class="qr-modal-header">
+                    <span class="qr-modal-title">名片二维码</span>
+                    <span class="qr-modal-close" @click="closeQRModal">×</span>
                 </div>
-                <div class="qr-body">
+                <div class="qr-modal-body">
                     <div class="qr-image-wrapper">
                         <img :src="currentQRUrl" alt="二维码" class="qr-image" />
                     </div>
@@ -267,7 +282,24 @@
                             <button class="copy-btn" @click="copyShareUrl">复制</button>
                         </div>
                     </div>
-                    <button class="save-btn" @click="saveQRCode">保存二维码图片</button>
+                    <div class="qr-actions">
+                        <button class="qr-action-btn" @click="shareQRCode">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                <polyline points="16 6 12 2 8 6"/>
+                                <line x1="12" y1="2" x2="12" y2="15"/>
+                            </svg>
+                            <span>转发</span>
+                        </button>
+                        <button class="qr-action-btn" @click="saveQRCode">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>保存</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -293,6 +325,7 @@
                 const currentQRUrl = ref('');
                 const currentShareUrl = ref('');
                 const currentCard = ref(null);
+                const currentCardTitle = ref('');
 
                 const userId = localStorage.getItem('userId');
                 if (!userId) { location.href = 'login.html'; }
@@ -372,12 +405,17 @@
                 };
 
                 const openDetail = (card) => {
-                    window.open(`card-detail.html?uuid=${card.uuid}`, '_blank');
+                    window.open(`card-detail.html?uuid=${card.uuid}&from=mine`, '_blank');
+                };
+
+                const openEdit = (card) => {
+                    location.href = `create-card.html?uuid=${card.uuid}`;
                 };
 
                 const showQR = (card) => {
                     if (card.qrCodeUrl) {
                         currentCard.value = card;
+                        currentCardTitle.value = card.title || '未命名卡片';
                         const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : BACKEND_URL + card.qrCodeUrl;
                         currentQRUrl.value = qrUrl;
                         currentShareUrl.value = `${NGROK_URL}/card-detail.html?uuid=${card.uuid}`;
@@ -390,6 +428,7 @@
                 const closeQRModal = () => {
                     showQRModal.value = false;
                     currentCard.value = null;
+                    currentCardTitle.value = '';
                     currentQRUrl.value = '';
                     currentShareUrl.value = '';
                 };
@@ -403,11 +442,65 @@
                     }
                 };
 
-                const saveQRCode = () => {
-                    const link = document.createElement('a');
-                    link.href = currentQRUrl.value;
-                    link.download = `qrcode_${currentCard.value?.title || 'card'}.png`;
-                    link.click();
+                const saveQRCode = async () => {
+                    try {
+                        const card = currentCard.value;
+                        const qrUrl = currentQRUrl.value;
+                        if (!card || !qrUrl) {
+                            vant.showToast({ type: 'fail', message: '无法获取卡片信息' });
+                            return;
+                        }
+                        
+                        const qrImage = new Image();
+                        qrImage.crossOrigin = 'anonymous';
+                        
+                        await new Promise((resolve, reject) => {
+                            qrImage.onload = resolve;
+                            qrImage.onerror = reject;
+                            qrImage.src = qrUrl;
+                        });
+                        
+                        const canvas = document.createElement('canvas');
+                        const padding = 20;
+                        canvas.width = qrImage.width + padding * 2;
+                        canvas.height = qrImage.height + padding * 2;
+                        
+                        const ctx = canvas.getContext('2d');
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        ctx.drawImage(qrImage, padding, padding);
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = `qrcode_${card.title || 'card'}.png`;
+                        link.click();
+                        
+                        vant.showToast({ type: 'success', message: '保存成功' });
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                        vant.showToast({ type: 'fail', message: '保存失败' });
+                    }
+                };
+
+                const shareQRCode = async () => {
+                    if (navigator.share) {
+                        try {
+                            await navigator.share({
+                                title: currentCard.value?.title || '名片',
+                                text: '扫码查看我的名片',
+                                url: currentShareUrl.value
+                            });
+                        } catch (e) {
+                            await copyShareUrl();
+                            vant.showToast({ type: 'none', message: '链接已复制，请手动分享' });
+                        }
+                    } else {
+                        await copyShareUrl();
+                        vant.showToast({ type: 'none', message: '链接已复制，请手动分享' });
+                    }
                 };
 
                 const deleteCard = async (card) => {
@@ -438,8 +531,8 @@
                 return {
                     myCards, likedCards, favoritedCards, loading, nickname, activeTab, privacyFilter,
                     filteredCards, showQRModal, currentQRUrl, currentShareUrl, NGROK_URL,
-                    switchTab, getFirstImage, formatTime, openDetail, showQR, closeQRModal,
-                    copyShareUrl, saveQRCode, deleteCard, goBack, goToHome, createCard, logout
+                    switchTab, getFirstImage, formatTime, openDetail, openEdit, showQR, closeQRModal,
+                    copyShareUrl, saveQRCode, shareQRCode, deleteCard, goBack, goToHome, createCard, logout
                 };
             }
         });

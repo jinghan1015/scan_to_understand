@@ -10,20 +10,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: white; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; overflow-x: hidden; }
         
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
         .glow-orbs {
             position: fixed;
             width: 100%;
@@ -61,28 +47,17 @@
         .back-btn:hover { background: rgba(96, 165, 250, 0.2); border-color: rgba(96, 165, 250, 0.4); }
         .header-title { font-size: 18px; font-weight: 600; color: #1e3a8a; letter-spacing: 2px; }
         
-        .ai-assist-btn { padding: 8px 16px; background: linear-gradient(135deg, rgba(96, 165, 250, 0.2), rgba(147, 197, 253, 0.2)); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 8px; color: #60a5fa; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease; }
-        .ai-assist-btn:hover { background: linear-gradient(135deg, rgba(96, 165, 250, 0.3), rgba(147, 197, 253, 0.3)); border-color: #60a5fa; }
-        
-        .ai-modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); display: flex; align-items: flex-end; justify-content: center; z-index: 1000; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .ai-modal-content { background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); border-radius: 24px 24px 0 0; width: 100%; max-width: 480px; padding: 30px; padding-bottom: 60px; animation: slideUp 0.3s ease; border: 1px solid rgba(96, 165, 250, 0.2); }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .ai-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px; }
-        .ai-modal-title { font-size: 20px; font-weight: 600; color: #1e3a8a; display: flex; align-items: center; gap: 10px; }
-        .ai-modal-close { width: 36px; height: 36px; background: rgba(96, 165, 250, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 22px; cursor: pointer; transition: all 0.3s ease; }
-        .ai-modal-close:hover { background: rgba(255, 100, 100, 0.2); color: #ff6464; }
-        .ai-textarea { width: 100%; min-height: 120px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 12px; padding: 15px; color: #1e3a8a; font-size: 15px; resize: none; outline: none; transition: all 0.3s ease; }
-        .ai-textarea:focus { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.2); }
-        .ai-textarea::placeholder { color: rgba(75, 85, 99, 0.4); }
-        .ai-submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border: none; border-radius: 12px; color: #1e3a8a; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3); }
-        .ai-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(96, 165, 250, 0.4); }
-        .ai-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .ai-result { margin-top: 20px; padding: 20px; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 12px; animation: fadeIn 0.3s ease; }
-        .ai-result-title { font-size: 14px; color: #60a5fa; margin-bottom: 12px; font-weight: 600; }
-        .ai-result-content { font-size: 14px; color: #1e3a8a; line-height: 1.7; white-space: pre-wrap; }
-        .ai-use-btn { margin-top: 15px; padding: 12px; width: 100%; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #60a5fa; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .ai-use-btn:hover { background: rgba(96, 165, 250, 0.2); }
+        .ai-section { background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
+        .ai-label { color: #1e3a8a; font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .ai-textarea { width: 100%; min-height: 120px; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 15px; color: #1e3a8a; font-size: 15px; resize: none; outline: none; }
+        .ai-textarea:focus { border-color: #60a5fa; }
+        .ai-textarea::placeholder { color: #9ca3af; }
+        .ai-submit-btn { margin-top: 15px; padding: 16px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; color: #1e3a8a; font-size: 16px; font-weight: 600; cursor: pointer; width: 100%; }
+        .ai-submit-btn:disabled { opacity: 0.5; }
+        .ai-result { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.8); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; }
+        .ai-result-title { font-size: 14px; color: #3b82f6; margin-bottom: 12px; font-weight: 600; }
+        .ai-result-content { font-size: 14px; color: #1f2937; line-height: 1.7; white-space: pre-wrap; }
+        .ai-use-btn { margin-top: 15px; padding: 12px; width: 100%; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 10px; color: #60a5fa; font-size: 14px; font-weight: 600; cursor: pointer; }
 
         .form-container { padding: 0 15px; }
         .form-card { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 20px; padding: 20px; margin-bottom: 15px; }
@@ -92,6 +67,7 @@
         .form-input:focus { border-color: #60a5fa; box-shadow: 0 0 20px rgba(96, 165, 250, 0.2); background: rgba(255, 255, 255, 0.9); }
         .form-input::placeholder { color: rgba(75, 85, 99, 0.4); }
         textarea.form-input { min-height: 120px; resize: vertical; line-height: 1.6; }
+        .file-input { display: none; }
         .file-upload-area { background: rgba(96, 165, 250, 0.1); border: 2px dashed rgba(96, 165, 250, 0.3); border-radius: 16px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s ease; }
         .file-upload-area:hover { border-color: #60a5fa; background: rgba(96, 165, 250, 0.15); }
         .file-upload-icon { font-size: 40px; margin-bottom: 10px; }
@@ -156,24 +132,14 @@
         .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
         .qr-modal-content { background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; box-shadow: 0 25px 50px rgba(96, 165, 250, 0.3); }
         .qr-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(96, 165, 250, 0.2); }
-        .qr-title { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #60a5fa, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .qr-title { font-size: 22px; font-weight: 700; color: #1e3a8a; }
         .qr-body { padding: 25px; text-align: center; }
-        .qr-card-info { margin-bottom: 20px; }
-        .qr-card-title { color: #1e3a8a; font-size: 18px; font-weight: 600; }
-        .qr-label { color: #4b5563; font-size: 14px; margin-bottom: 15px; }
         .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(96, 165, 250, 0.3); }
         .qr-image { width: 180px; height: 180px; display: block; }
-        .qr-tip { color: #4b5563; font-size: 12px; margin-bottom: 20px; }
-        .qr-share-section { text-align: left; }
-        .qr-link-label { color: #4b5563; font-size: 13px; margin-bottom: 8px; }
-        .qr-link-box { display: flex; gap: 10px; }
-        .qr-link-input { flex: 1; background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 10px; padding: 12px 15px; color: #1e3a8a; font-size: 12px; outline: none; }
-        .copy-btn { padding: 12px 20px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border: none; border-radius: 10px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .copy-btn:active { transform: scale(0.95); }
+        .qr-tip { color: #4b5563; font-size: 14px; margin-bottom: 20px; }
         .qr-footer { padding: 20px 25px; display: flex; gap: 12px; border-top: 1px solid rgba(96, 165, 250, 0.2); }
         .qr-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
         .qr-btn.primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border: none; color: #1e3a8a; box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3); }
-        .qr-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(96, 165, 250, 0.4); }
         .qr-btn.secondary { background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); color: #1e3a8a; }
         .qr-btn.secondary:hover { background: rgba(96, 165, 250, 0.2); border-color: rgba(96, 165, 250, 0.4); }
     </style>
@@ -194,15 +160,23 @@
         <div class="header">
             <div class="back-btn" @click="goBack">←</div>
             <div class="header-title">{{ isEdit ? '编辑卡片' : '视听图文' }}</div>
-            <button class="ai-assist-btn" @click="openAIModal">
-                <svg width="18" height="18" viewBox="0 0 48 48" fill="#00d4ff">
-                    <ellipse cx="24" cy="12" rx="7" ry="7"/><rect x="21" y="19" width="6" height="4"/><ellipse cx="24" cy="32" rx="14" ry="12"/><ellipse cx="18" cy="30" rx="3" ry="3"/><ellipse cx="30" cy="30" rx="3" ry="3"/><rect x="6" y="26" width="3" height="8" rx="1.5"/><rect x="39" y="26" width="3" height="8" rx="1.5"/>
-                </svg>
-                <span>AI辅助</span>
-            </button>
+            <div style="width: 40px;"></div>
         </div>
 
         <div class="form-container">
+            <div class="ai-section">
+                <div class="ai-label">🤖 AI智能生成</div>
+                <textarea class="ai-textarea" v-model="aiPrompt" placeholder="请输入你的需求描述，例如：帮我生成一段关于旅游攻略的文案..."></textarea>
+                <button class="ai-submit-btn" :disabled="!aiPrompt.trim() || aiLoading" @click="generateAI">
+                    {{ aiLoading ? '生成中...' : '智能生成' }}
+                </button>
+                <div v-if="aiResult" class="ai-result">
+                    <div class="ai-result-title">生成结果</div>
+                    <div class="ai-result-content">{{ aiResult }}</div>
+                    <button class="ai-use-btn" @click="fillContent">填充到内容框</button>
+                </div>
+            </div>
+
             <div class="form-card">
                 <div class="section-label"><span>📝</span><span>标题</span></div>
                 <input class="form-input" v-model="title" type="text" placeholder="请输入卡片标题" />
@@ -218,20 +192,48 @@
                     <div class="file-upload-text">点击上传图片 <span>(可多选)</span></div>
                 </div>
                 <input type="file" ref="imageInput" class="file-input" accept="image/*" multiple @change="onImagesChange" />
-                <div class="preview-area" v-if="imageFiles.length > 0">
-                    <div class="preview-item" v-for="(img, idx) in imageFiles" :key="idx">
+                <div class="preview-area">
+                    <div class="preview-item" v-for="(img, idx) in displayImages" :key="'existing-' + idx" :style="{ cursor: 'pointer' }">
                         <img :src="getImagePreview(img)" alt="预览" />
+                        <button v-if="isEdit" class="remove-btn" style="position:absolute;top:-5px;right:-5px;width:20px;height:20px;padding:0;" @click.stop="removeDisplayImage(idx)">×</button>
                     </div>
                 </div>
 
                 <div class="section-label"><span>🎬</span><span>上传视频</span></div>
+                <div v-if="existingVideo && !videoFile" class="media-preview">
+                    <div class="media-item">
+                        <div class="media-icon">🎬</div>
+                        <div class="media-info">
+                            <div class="media-name">已有视频</div>
+                        </div>
+                        <button class="remove-btn" @click="removeExistingVideo">×</button>
+                    </div>
+                </div>
                 <div class="file-upload-area" @click="triggerVideoUpload">
                     <div class="file-upload-icon">🎥</div>
-                    <div class="file-upload-text">点击上传视频</div>
+                    <div class="file-upload-text">{{ videoFile ? '重新上传' : '点击上传视频' }}</div>
                 </div>
                 <input type="file" ref="videoInput" class="file-input" accept="video/*" @change="onVideoChange" />
+                <div v-if="videoFile" class="media-preview">
+                    <div class="media-item">
+                        <div class="media-icon">🎬</div>
+                        <div class="media-info">
+                            <div class="media-name">{{ videoFile.name }}</div>
+                        </div>
+                        <button class="remove-btn" @click="removeVideoFile">×</button>
+                    </div>
+                </div>
 
                 <div class="section-label"><span>🎙️</span><span>录音</span></div>
+                <div v-if="existingAudio && !audioFile" class="media-preview">
+                    <div class="media-item">
+                        <div class="media-icon">🎙️</div>
+                        <div class="media-info">
+                            <div class="media-name">已有录音</div>
+                        </div>
+                        <button class="remove-btn" @click="removeExistingAudio">×</button>
+                    </div>
+                </div>
                 <div class="audio-recorder">
                     <div class="recorder-display">
                         <div class="recorder-wave" v-if="isRecording">
@@ -276,43 +278,19 @@
 
         <div class="qr-modal" v-if="showQRModal">
             <div class="qr-modal-content">
-                <div class="qr-header"><span class="qr-title">✨ 名片已创建</span></div>
+                <div class="qr-header"><span class="qr-title">🎉 二维码已生成</span></div>
                 <div class="qr-body">
-                    <div>{{ createdCard?.title }}</div>
-                    <div class="qr-label">扫码查看名片</div>
                     <div class="qr-image-wrapper"><img :src="createdCard?.qrCodeUrl" alt="二维码" class="qr-image" /></div>
-                    <button class="copy-btn" @click="copyLink">复制链接</button>
+                    <div class="qr-tip">扫码查看名片</div>
                 </div>
                 <div class="qr-footer">
-                    <button class="qr-btn secondary" @click="goToMine">查看我的名片</button>
-                    <button class="qr-btn primary" @click="closeQRModal">继续创建</button>
+                    <button class="qr-btn secondary" @click="closeQRModal">关闭</button>
+                    <button class="qr-btn primary" @click="saveQRCode">保存图片</button>
                 </div>
             </div>
         </div>
 
-        <div class="ai-modal-overlay" v-if="showAIModal" @click.self="closeAIModal">
-            <div class="ai-modal-content">
-                <div class="ai-modal-header">
-                    <div class="ai-modal-title">
-                        <svg width="22" height="22" viewBox="0 0 48 48" fill="#00d4ff">
-                            <ellipse cx="24" cy="12" rx="7" ry="7"/><rect x="21" y="19" width="6" height="4"/><ellipse cx="24" cy="32" rx="14" ry="12"/><ellipse cx="18" cy="30" rx="3" ry="3"/><ellipse cx="30" cy="30" rx="3" ry="3"/><rect x="6" y="26" width="3" height="8" rx="1.5"/><rect x="39" y="26" width="3" height="8" rx="1.5"/>
-                        </svg>
-                        <span>AI 智能创作</span>
-                    </div>
-                    <span class="ai-modal-close" @click="closeAIModal">×</span>
-                </div>
-                <textarea class="ai-textarea" v-model="aiPrompt" placeholder="请描述您的名片需求"></textarea>
-                <button class="ai-submit-btn" @click="generateAI" :disabled="!aiPrompt.trim() || aiLoading">
-                    <span v-if="aiLoading">生成中...</span>
-                    <span v-else>✨ 智能生成</span>
-                </button>
-                <div v-if="aiResult" class="ai-result">
-                    <div class="ai-result-title">AI 生成结果</div>
-                    <div class="ai-result-content">{{ aiResult }}</div>
-                    <button class="ai-use-btn" @click="useAIResult">填充到内容框</button>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
@@ -320,7 +298,7 @@
     <script src="common.js"></script>
 
     <script>
-        const { createApp, ref, computed } = Vue;
+        const { createApp, ref, computed, onMounted } = Vue;
         const app = createApp({
             setup() {
                 const title = ref('');
@@ -333,7 +311,6 @@
                 const isPublic = ref(false);
                 const createdCard = ref(null);
                 const isEdit = ref(false);
-                const showAIModal = ref(false);
                 const aiPrompt = ref('');
                 const aiResult = ref('');
                 const aiLoading = ref(false);
@@ -341,10 +318,67 @@
                 const recordingDuration = ref(0);
                 const mediaRecorder = ref(null);
                 const audioChunks = ref([]);
+                const editingUuid = ref('');
+                const existingImages = ref([]);
+                const keptImageUrls = ref([]);
+                const existingVideo = ref('');
+                const keepExistingVideo = ref(true);
+                const existingAudio = ref('');
+                const keepExistingAudio = ref(true);
                 let recordingTimer = null;
 
                 const userId = localStorage.getItem('userId');
                 if (!userId) location.href = 'login.html';
+
+                // 合并显示已有图片和新上传的图片
+                const displayImages = computed(() => {
+                    const result = [];
+                    // 先添加保留的已有图片
+                    keptImageUrls.value.forEach(url => {
+                        result.push({ url, isExisting: true });
+                    });
+                    // 再添加新上传的图片
+                    imageFiles.value.forEach(file => {
+                        result.push({ file, isExisting: false });
+                    });
+                    return result;
+                });
+
+                const getImagePreview = (img) => {
+                    if (img.url) return img.url;
+                    return URL.createObjectURL(img.file);
+                };
+
+                const loadCardForEdit = async (uuid) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/card/detail/${uuid}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            const card = data.data;
+                            title.value = card.title || '';
+                            textContent.value = card.textContent || '';
+                            isPublic.value = card.isPublic || false;
+                            editingUuid.value = uuid;
+                            existingImages.value = card.imageUrls ? JSON.parse(card.imageUrls) : [];
+                            keptImageUrls.value = [...existingImages.value];
+                            existingVideo.value = card.videoUrl || '';
+                            keepExistingVideo.value = !!card.videoUrl;
+                            existingAudio.value = card.audioUrl || '';
+                            keepExistingAudio.value = !!card.audioUrl;
+                            isEdit.value = true;
+                        }
+                    } catch (e) {
+                        console.error('加载卡片失败:', e);
+                    }
+                };
+
+                onMounted(() => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const uuid = urlParams.get('uuid');
+                    if (uuid) {
+                        loadCardForEdit(uuid);
+                    }
+                });
 
                 const cardShareUrl = computed(() => {
                     if (!createdCard.value) return '';
@@ -364,7 +398,30 @@
                     videoFile.value = e.target.files[0];
                 };
 
-                const getImagePreview = (file) => URL.createObjectURL(file);
+                // 删除显示的图片
+                const removeDisplayImage = (idx) => {
+                    const img = displayImages.value[idx];
+                    if (img.isExisting) {
+                        // 已有图片：从保留列表中移除
+                        keptImageUrls.value = keptImageUrls.value.filter((_, i) => i !== idx);
+                    } else {
+                        // 新上传图片：从文件列表中移除
+                        const newIdx = idx - keptImageUrls.value.length;
+                        imageFiles.value = imageFiles.value.filter((_, i) => i !== newIdx);
+                    }
+                };
+
+                const removeExistingVideo = () => {
+                    keepExistingVideo.value = false;
+                };
+
+                const removeVideoFile = () => {
+                    videoFile.value = null;
+                };
+
+                const removeExistingAudio = () => {
+                    keepExistingAudio.value = false;
+                };
                 const formatDuration = (seconds) => {
                     const mins = Math.floor(seconds / 60);
                     const secs = seconds % 60;
@@ -410,20 +467,8 @@
                         return;
                     }
                     
-                    try {
-                        const checkRes = await fetch(`${BASE_URL}/card/check-duplicate?userId=${userId}&title=${encodeURIComponent(title.value)}`);
-                        const checkData = await checkRes.json();
-                        if (checkData.code === 200 && checkData.data.exists) {
-                            vant.showToast({ type: 'fail', message: '您已创建过相同标题的卡片' });
-                            return;
-                        }
-                    } catch (e) {
-                        console.error('检查重复失败:', e);
-                    }
-                    
                     loading.value = true;
                     const formData = new FormData();
-                    formData.append('userId', userId);
                     formData.append('title', title.value);
                     formData.append('textContent', textContent.value);
                     formData.append('isPublic', isPublic.value ? 'true' : 'false');
@@ -431,14 +476,44 @@
                     if (videoFile.value) formData.append('video', videoFile.value);
                     if (audioFile.value) formData.append('audio', audioFile.value);
                     
+                    let url = `${BASE_URL}/card/create`;
+                    let method = 'POST';
+                    if (isEdit.value && editingUuid.value) {
+                        url = `${BASE_URL}/card/update`;
+                        formData.append('uuid', editingUuid.value);
+                        // 编辑时添加保留文件信息
+                        formData.append('keepImageUrls', JSON.stringify(keptImageUrls.value));
+                        // 如果用户上传了新视频，keepVideo参数无效
+                        if (!videoFile.value) {
+                            formData.append('keepVideo', keepExistingVideo.value ? 'true' : 'false');
+                        }
+                        // 如果用户上传了新音频，keepAudio参数无效
+                        if (!audioFile.value) {
+                            formData.append('keepAudio', keepExistingAudio.value ? 'true' : 'false');
+                        }
+                    } else {
+                        formData.append('userId', userId);
+                        try {
+                            const checkRes = await fetch(`${BASE_URL}/card/check-duplicate?userId=${userId}&title=${encodeURIComponent(title.value)}`);
+                            const checkData = await checkRes.json();
+                            if (checkData.code === 200 && checkData.data.exists) {
+                                vant.showToast({ type: 'fail', message: '您已创建过相同标题的卡片' });
+                                loading.value = false;
+                                return;
+                            }
+                        } catch (e) {
+                            console.error('检查重复失败:', e);
+                        }
+                    }
+                    
                     try {
-                        const res = await fetch(`${BASE_URL}/card/create`, { method: 'POST', body: formData });
+                        const res = await fetch(url, { method: method, body: formData });
                         const data = await res.json();
                         if (data.code === 200) {
                             createdCard.value = data.data;
                             showQRModal.value = true;
                         } else {
-                            vant.showToast({ type: 'fail', message: data.msg || '创建失败' });
+                            vant.showToast({ type: 'fail', message: data.msg || (isEdit.value ? '更新失败' : '创建失败') });
                         }
                     } catch (e) {
                         vant.showToast({ type: 'fail', message: '网络错误' });
@@ -467,11 +542,13 @@
                     }
                 };
 
-                const openAIModal = () => showAIModal.value = true;
-                const closeAIModal = () => {
-                    showAIModal.value = false;
-                    aiPrompt.value = '';
-                    aiResult.value = '';
+                const fillContent = () => {
+                    if (aiResult.value) {
+                        textContent.value = aiResult.value;
+                        aiResult.value = '';
+                        aiPrompt.value = '';
+                        vant.showToast({ type: 'success', message: '已填充' });
+                    }
                 };
 
                 const generateAI = async () => {
@@ -496,20 +573,54 @@
                     }
                 };
 
-                const useAIResult = () => {
-                    if (aiResult.value) {
-                        textContent.value = aiResult.value;
-                        closeAIModal();
+                const saveQRCode = async () => {
+                    try {
+                        const qrUrl = createdCard.value?.qrCodeUrl;
+                        if (!qrUrl) return;
+                        
+                        const qrImage = new Image();
+                        qrImage.crossOrigin = 'anonymous';
+                        
+                        await new Promise((resolve, reject) => {
+                            qrImage.onload = resolve;
+                            qrImage.onerror = reject;
+                            qrImage.src = qrUrl.startsWith('http') ? qrUrl : BASE_URL + qrUrl;
+                        });
+                        
+                        const canvas = document.createElement('canvas');
+                        const padding = 20;
+                        canvas.width = qrImage.width + padding * 2;
+                        canvas.height = qrImage.height + padding * 2;
+                        
+                        const ctx = canvas.getContext('2d');
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        ctx.drawImage(qrImage, padding, padding);
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = `qrcode_${createdCard.value?.title || 'card'}.png`;
+                        link.click();
+                        
+                        vant.showToast({ type: 'success', message: '保存成功' });
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                        vant.showToast({ type: 'fail', message: '保存失败' });
                     }
                 };
 
                 return {
                     title, textContent, imageFiles, videoFile, audioFile, loading, showQRModal, isPublic,
-                    createdCard, isEdit, showAIModal, aiPrompt, aiResult, aiLoading, isRecording,
+                    createdCard, isEdit, aiPrompt, aiResult, aiLoading, isRecording,
                     recordingDuration, cardShareUrl, goBack, setPrivacy, triggerImageUpload,
                     triggerVideoUpload, onImagesChange, onVideoChange, getImagePreview, formatDuration,
                     toggleRecording, playAudio, clearAudio, submitCard, closeQRModal, goToMine,
-                    copyLink, openAIModal, closeAIModal, generateAI, useAIResult
+                    copyLink, generateAI, fillContent, saveQRCode,
+                    displayImages, existingVideo, existingAudio,
+                    removeDisplayImage, removeExistingVideo, removeVideoFile, removeExistingAudio
                 };
             }
         });

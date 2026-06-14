@@ -39,7 +39,7 @@ public class WebConfig implements WebMvcConfigurer, CommandLineRunner {
         }
 
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + absolutePath + File.separator);
+                .addResourceLocations("file:" + absolutePath + "/");
     }
 
     @Override

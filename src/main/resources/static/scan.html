@@ -15,23 +15,9 @@
 
         body {
             min-height: 100vh;
-            background: white;
+            background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             overflow-x: hidden;
-        }
-
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
         }
 
         .glow-orbs {
@@ -66,28 +52,6 @@
             75% { transform: translateY(-25px) rotate(5deg) scale(1.1); opacity: 0.7; }
         }
 
-        .orb-1 {
-            display: none;
-            top: -100px;
-            right: -100px;
-        }
-
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: #7c3aed;
-            bottom: -50px;
-            left: -50px;
-            animation-delay: -4s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -20px) scale(1.05); }
-            50% { transform: translate(-20px, 20px) scale(0.95); }
-            75% { transform: translate(25px, 25px) scale(1.02); }
-        }
-
         .app-container {
             position: relative;
             z-index: 2;
@@ -100,16 +64,16 @@
             align-items: center;
             justify-content: space-between;
             padding: 20px 20px;
-            background: rgba(10, 10, 15, 0.9);
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .back-btn {
             width: 44px;
             height: 44px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -121,8 +85,8 @@
         }
 
         .back-btn:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: rgba(0, 212, 255, 0.3);
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
         .header-title {
@@ -141,12 +105,13 @@
         }
 
         .scan-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(96, 165, 250, 0.3);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(96, 165, 250, 0.1);
         }
 
         .scan-video-wrapper {
@@ -179,7 +144,7 @@
         .scan-frame {
             width: 250px;
             height: 250px;
-            border: 3px solid #00d4ff;
+            border: 3px solid #3b82f6;
             border-radius: 16px;
             position: relative;
         }
@@ -190,7 +155,7 @@
             position: absolute;
             width: 30px;
             height: 30px;
-            border-color: #00d4ff;
+            border-color: #3b82f6;
             border-style: solid;
         }
 
@@ -213,7 +178,7 @@
             left: 20px;
             right: 20px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
             animation: scan 2s linear infinite;
         }
 
@@ -224,7 +189,7 @@
 
         .scan-tip {
             text-align: center;
-            color: rgba(255, 255, 255, 0.6);
+            color: #4b5563;
             font-size: 14px;
             margin-top: 20px;
         }
@@ -251,25 +216,25 @@
         }
 
         .btn-upload {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
         }
 
         .btn-upload:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(0, 212, 255, 0.4);
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         .btn-switch {
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
             color: #fff;
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .btn-switch:hover {
             transform: translateY(-2px);
-            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
         .result-section {
@@ -281,8 +246,8 @@
         }
 
         .result-card {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
-            border: 1px solid rgba(0, 212, 255, 0.3);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(96, 165, 250, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 20px;
             padding: 25px;
         }
@@ -290,7 +255,7 @@
         .result-icon {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -301,17 +266,17 @@
 
         .result-title {
             text-align: center;
-            color: #fff;
+            color: #1e3a8a;
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 10px;
         }
 
         .result-url {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(59, 130, 246, 0.1);
             border-radius: 12px;
             padding: 12px 15px;
-            color: rgba(255, 255, 255, 0.8);
+            color: #1e3a8a;
             font-size: 13px;
             word-break: break-all;
             margin-bottom: 20px;
@@ -334,24 +299,24 @@
         }
 
         .btn-open {
-            background: linear-gradient(135deg, #00d4ff 0%, #7c3aed 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
             color: #fff;
         }
 
         .btn-open:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .btn-rescan {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
         }
 
         .btn-rescan:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(0, 212, 255, 0.4);
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
         }
 
         .loading-overlay {
@@ -376,7 +341,7 @@
         .loading-spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: #00d4ff;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -387,14 +352,13 @@
         }
 
         .loading-text {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
+            color: #fff;
+            font-size: 16px;
         }
     </style>
 </head>
 
 <body>
-    <div class="grid-overlay"></div>
     <div class="glow-orbs">
         <div class="floating-item">✨</div>
         <div class="floating-item">🌸</div>
@@ -448,23 +412,41 @@
 
     <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
     <script src="https://fastly.jsdelivr.net/npm/vant@4/lib/vant.min.js"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="common.js"></script>
 
     <script>
-        const { createApp, ref, onMounted, onUnmounted } = Vue;
+        const { createApp, ref, computed, onMounted, onUnmounted } = Vue;
 
         const app = createApp({
             setup() {
-                let html5QrCode = null;
-                let stream = null;
+                let videoStream = null;
+                let animationId = null;
+                let canvas = null;
+                let ctx = null;
 
                 const scanning = ref(false);
                 const showResult = ref(false);
                 const resultUrl = ref('');
                 const isFront = ref(false);
 
+                const isUrl = computed(() => {
+                    if (!resultUrl.value) return false;
+                    return resultUrl.value.startsWith('http://') || 
+                           resultUrl.value.startsWith('https://') ||
+                           resultUrl.value.includes('.html');
+                });
+
                 onMounted(() => {
+                    canvas = document.createElement('canvas');
+                    ctx = canvas.getContext('2d');
+                    
+                    if (typeof jsQR === 'undefined') {
+                        console.error('jsQR 库未加载');
+                        vant.Toast.fail('扫码功能初始化失败，请刷新页面重试');
+                        return;
+                    }
+                    
                     startScanner();
                 });
 
@@ -475,59 +457,140 @@
                 const startScanner = async () => {
                     try {
                         scanning.value = true;
-                        html5QrCode = new Html5Qrcode('video');
                         
-                        const config = {
-                            fps: 10,
-                            qrbox: { width: 250, height: 250 },
-                            aspectRatio: 1.0
+                        const videoElement = document.getElementById('video');
+                        if (!videoElement) {
+                            throw new Error('无法找到视频元素');
+                        }
+                        
+                        const constraints = {
+                            video: {
+                                facingMode: isFront.value ? 'user' : 'environment',
+                                width: { ideal: 640 },
+                                height: { ideal: 480 },
+                                focusMode: 'continuous'
+                            }
                         };
-
-                        await html5QrCode.start(
-                            { facingMode: isFront.value ? 'user' : 'environment' },
-                            config,
-                            onScanSuccess,
-                            onScanFailure
-                        );
+                        
+                        videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+                        videoElement.srcObject = videoStream;
+                        
+                        await new Promise((resolve) => {
+                            videoElement.onloadedmetadata = () => {
+                                resolve();
+                            };
+                        });
+                        
+                        await videoElement.play();
+                        
+                        console.log('视频流加载成功，分辨率:', videoElement.videoWidth, 'x', videoElement.videoHeight);
+                        
+                        setTimeout(() => {
+                            startScanLoop();
+                        }, 500);
+                        
+                        console.log('扫码器启动成功');
                     } catch (error) {
                         console.error('扫码器启动失败:', error);
-                        vant.Toast.fail('无法启动相机，请检查权限设置');
+                        if (error.name === 'NotAllowedError') {
+                            vant.Toast.fail('相机权限被拒绝，请在设置中开启');
+                        } else if (error.name === 'NotFoundError') {
+                            vant.Toast.fail('未检测到摄像头设备');
+                        } else if (error.name === 'NotSupportedError') {
+                            vant.Toast.fail('浏览器不支持摄像头功能，请使用HTTPS');
+                        } else {
+                            vant.Toast.fail('无法启动相机: ' + error.message);
+                        }
                         scanning.value = false;
                     }
                 };
 
-                const stopScanner = async () => {
-                    try {
-                        if (html5QrCode) {
-                            await html5QrCode.stop();
-                            html5QrCode = null;
+                const startScanLoop = () => {
+                    const videoElement = document.getElementById('video');
+                    if (!videoElement || !videoStream) return;
+                    
+                    let frameCount = 0;
+                    
+                    const scan = () => {
+                        if (!scanning.value) return;
+                        
+                        try {
+                            const vWidth = videoElement.videoWidth || 640;
+                            const vHeight = videoElement.videoHeight || 480;
+                            
+                            canvas.width = vWidth;
+                            canvas.height = vHeight;
+                            
+                            ctx.drawImage(videoElement, 0, 0, vWidth, vHeight);
+                            
+                            const imageData = ctx.getImageData(0, 0, vWidth, vHeight);
+                            
+                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: 'both',
+                                maxNumberOfSymbols: 10
+                            });
+                            
+                            if (code) {
+                                console.log('识别到二维码:', code.data);
+                                handleScanResult(code.data);
+                                return;
+                            }
+                            
+                            frameCount++;
+                            if (frameCount % 30 === 0) {
+                                console.log('已扫描', frameCount, '帧，未识别到二维码');
+                            }
+                        } catch (e) {
+                            console.error('扫描帧失败:', e);
                         }
-                    } catch (error) {
-                        console.error('停止扫码器失败:', error);
+                        
+                        animationId = requestAnimationFrame(scan);
+                    };
+                    
+                    scan();
+                };
+
+                const stopScanner = () => {
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
                     }
+                    
+                    if (videoStream) {
+                        videoStream.getTracks().forEach(track => track.stop());
+                        videoStream = null;
+                    }
+                    
+                    const videoElement = document.getElementById('video');
+                    if (videoElement) {
+                        videoElement.srcObject = null;
+                    }
+                    
                     scanning.value = false;
-                };
-
-                const onScanSuccess = (decodedText) => {
-                    if (decodedText) {
-                        handleScanResult(decodedText);
-                    }
-                };
-
-                const onScanFailure = (error) => {
                 };
 
                 const handleScanResult = (text) => {
                     if (!text) return;
                     
                     let url = text;
-                    if (!text.startsWith('http://') && !text.startsWith('https://')) {
-                        if (text.includes('card-detail.html')) {
-                            url = NGROK_URL + '/' + text;
-                        } else if (text.startsWith('/')) {
-                            url = NGROK_URL + text;
+                    console.log('扫码结果:', text);
+                    
+                    if (text.includes('card-detail.html?')) {
+                        const uuidMatch = text.match(/uuid=([^&]+)/);
+                        if (uuidMatch) {
+                            const uuid = uuidMatch[1];
+                            url = `card-detail.html?uuid=${uuid}`;
                         } else {
-                            url = 'https://' + text;
+                            const pathMatch = text.match(/card-detail\.html.*$/);
+                            if (pathMatch) {
+                                url = pathMatch[0];
+                            }
+                        }
+                    } else if (!text.startsWith('http://') && !text.startsWith('https://')) {
+                        if (text.startsWith('/')) {
+                            url = window.location.origin + text;
+                        } else {
+                            url = text;
                         }
                     }
 
@@ -558,33 +621,70 @@
                             duration: 0
                         });
 
-                        const tempScanner = new Html5Qrcode('video');
-                        const result = await tempScanner.scanFile(file, true);
+                        const img = new Image();
+                        const url = URL.createObjectURL(file);
                         
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                            img.src = url;
+                        });
+                        
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: 'both'
+                        });
+                        
+                        URL.revokeObjectURL(url);
                         vant.closeToast();
-                        handleScanResult(result);
+                        
+                        if (code) {
+                            handleScanResult(code.data);
+                        } else {
+                            vant.Toast.fail('未能识别二维码，请重试');
+                        }
                     } catch (error) {
                         vant.closeToast();
                         console.error('图片扫描失败:', error);
-                        vant.Toast.fail('未能识别二维码，请重试');
+                        vant.Toast.fail('图片处理失败，请重试');
                     }
                 };
 
                 const switchCamera = async () => {
                     isFront.value = !isFront.value;
-                    await stopScanner();
-                    await startScanner();
+                    stopScanner();
+                    setTimeout(() => startScanner(), 100);
                 };
 
                 const rescan = async () => {
                     showResult.value = false;
                     resultUrl.value = '';
-                    await startScanner();
+                    startScanner();
                 };
 
                 const openResult = () => {
-                    if (resultUrl.value) {
-                        window.open(resultUrl.value, '_blank');
+                    if (!resultUrl.value) return;
+                    
+                    const isUrl = resultUrl.value.startsWith('http://') || 
+                                  resultUrl.value.startsWith('https://') ||
+                                  resultUrl.value.includes('.html');
+                    
+                    if (isUrl) {
+                        if (resultUrl.value.includes('.html') && !resultUrl.value.startsWith('http')) {
+                            window.location.href = resultUrl.value;
+                        } else {
+                            window.open(resultUrl.value, '_blank');
+                        }
+                    } else {
+                        navigator.clipboard.writeText(resultUrl.value).then(() => {
+                            vant.Toast.success('内容已复制到剪贴板');
+                        }).catch(() => {
+                            vant.Toast.fail('复制失败');
+                        });
                     }
                 };
 
@@ -597,6 +697,7 @@
                     showResult,
                     resultUrl,
                     isFront,
+                    isUrl,
                     uploadImage,
                     switchCamera,
                     rescan,

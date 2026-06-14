@@ -9,20 +9,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { min-height: 100vh; background: white; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; overflow-x: hidden; }
         
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
-        }
-        
         .glow-orbs {
             position: fixed;
             width: 100%;
@@ -88,17 +74,18 @@
         .loading-spinner { width: 50px; height: 50px; border: 3px solid rgba(59,130,246,0.15); border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border: 1px solid rgba(59,130,246,0.15); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; }
-        .qr-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(59,130,246,0.1); }
+        .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .qr-modal-content { background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); border: 1px solid rgba(96, 165, 250, 0.3); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; box-shadow: 0 25px 50px rgba(96, 165, 250, 0.3); }
+        .qr-header { padding: 25px; text-align: center; border-bottom: 1px solid rgba(96, 165, 250, 0.2); }
         .qr-title { font-size: 22px; font-weight: 700; color: #1e3a8a; }
         .qr-body { padding: 25px; text-align: center; }
-        .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
+        .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(96, 165, 250, 0.3); }
         .qr-image { width: 180px; height: 180px; display: block; }
-        .qr-footer { padding: 20px 25px; display: flex; gap: 12px; border-top: 1px solid rgba(59,130,246,0.1); }
-        .qr-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
-        .qr-btn.primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
-        .qr-btn.secondary { background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); color: #1e3a8a; }
+        .qr-tip { color: #4b5563; font-size: 14px; margin-bottom: 20px; }
+        .qr-footer { padding: 20px 25px; display: flex; gap: 12px; border-top: 1px solid rgba(96, 165, 250, 0.2); }
+        .qr-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .qr-btn.primary { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border: none; color: #1e3a8a; box-shadow: 0 10px 30px rgba(96, 165, 250, 0.3); }
+        .qr-btn.secondary { background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.3); color: #1e3a8a; }
     </style>
 </head>
 <body>
@@ -166,7 +153,7 @@
                     <div class="qr-image-wrapper">
                         <img v-if="qrCodeUrl" :src="qrCodeUrl" class="qr-image" />
                     </div>
-                    <p style="color: #4b5563; font-size: 14px;">扫码跳转到目标链接</p>
+                    <div class="qr-tip">扫码查看你的外链跳转</div>
                 </div>
                 <div class="qr-footer">
                     <button class="qr-btn secondary" @click="showQRModal = false">关闭</button>
@@ -191,6 +178,7 @@
                 const showLoading = ref(false);
                 const showQRModal = ref(false);
                 const qrCodeUrl = ref('');
+                const currentUrl = ref('');
 
                 const userId = localStorage.getItem('userId');
                 if (!userId) {
@@ -227,6 +215,7 @@
                         const data = await res.json();
                         if (data.code === 200) {
                             qrCodeUrl.value = data.data.qrCodeUrl.startsWith('http') ? data.data.qrCodeUrl : BACKEND_URL + data.data.qrCodeUrl;
+                            currentUrl.value = NGROK_URL + '/card-detail.html?uuid=' + data.data.uuid;
                             showQRModal.value = true;
                         } else {
                             vant.showToast({ type: 'fail', message: data.msg || '生成失败' });
@@ -237,19 +226,55 @@
                     showLoading.value = false;
                 };
 
-                const saveQRCode = () => {
+                const saveQRCode = async () => {
                     if (!qrCodeUrl.value) return;
-                    const link = document.createElement('a');
-                    link.href = qrCodeUrl.value;
-                    link.download = `qrcode_link.png`;
-                    link.click();
+                    
+                    try {
+                        const qrImage = new Image();
+                        qrImage.crossOrigin = 'anonymous';
+                        
+                        await new Promise((resolve, reject) => {
+                            qrImage.onload = resolve;
+                            qrImage.onerror = reject;
+                            qrImage.src = qrCodeUrl.value;
+                        });
+                        
+                        const canvas = document.createElement('canvas');
+                        const padding = 20;
+                        canvas.width = qrImage.width + padding * 2;
+                        canvas.height = qrImage.height + padding * 2;
+                        
+                        const ctx = canvas.getContext('2d');
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        ctx.drawImage(qrImage, padding, padding);
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = `qrcode_${title.value || 'link'}.png`;
+                        link.click();
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                    }
                 };
 
                 const goBack = () => history.back();
 
+                const copyLink = async () => {
+                    try {
+                        await navigator.clipboard.writeText(currentUrl.value);
+                        vant.showToast({ type: 'success', message: '复制成功' });
+                    } catch (e) {
+                        vant.showToast({ type: 'fail', message: '复制失败' });
+                    }
+                };
+
                 return {
-                    title, targetUrl, isPublic, showLoading, showQRModal, qrCodeUrl,
-                    isValidUrl, generateQRCode, saveQRCode, goBack
+                    title, targetUrl, isPublic, showLoading, showQRModal, qrCodeUrl, currentUrl,
+                    isValidUrl, generateQRCode, saveQRCode, goBack, copyLink
                 };
             }
         }).use(vant).mount('#app');

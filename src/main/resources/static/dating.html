@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>码上交友</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vant@4/lib/vant.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/vant@4/lib/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, #fdf2f8 0%, #e0e7ff 100%); min-height: 100vh; }
+        .page-container { max-width: 420px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 15px 20px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        .back-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .header-title { font-size: 18px; font-weight: 600; }
+        .tabs-wrapper { display: flex; border-bottom: 1px solid #f3f4f6; background: #fff; }
+        .tab-item { flex: 1; padding: 15px 10px; text-align: center; font-size: 14px; color: #6b7280; cursor: pointer; position: relative; }
+        .tab-item.active { color: #ec4899; font-weight: 600; }
+        .tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 30px; height: 2px; background: linear-gradient(135deg, #ec4899, #a855f7); }
+        
+        .create-profile-container { padding: 20px; }
+        .create-header { text-align: center; margin-bottom: 25px; }
+        .create-header h2 { font-size: 22px; color: #1f2937; margin-bottom: 8px; }
+        .create-header p { font-size: 14px; color: #6b7280; }
+        
+        .form-section { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #ec4899; }
+        .form-group textarea { resize: none; min-height: 80px; }
+        
+        .photo-upload-group { text-align: center; }
+        .photo-upload-container { display: flex; justify-content: center; position: relative; width: 120px; height: 120px; margin: 0 auto; }
+        .photo-preview { width: 100%; height: 100%; border-radius: 50%; border: 3px dashed #d1d5db; background-size: cover; background-position: center; position: relative; cursor: pointer; transition: all 0.3s; }
+        .photo-preview:hover { border-color: #ec4899; }
+        .photo-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #9ca3af; }
+        .placeholder-icon { font-size: 32px; margin-bottom: 8px; }
+        .placeholder-text { font-size: 12px; }
+        .photo-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .photo-remove { position: absolute; top: -5px; right: -5px; width: 24px; height: 24px; background: #ef4444; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; z-index: 20; }
+        .upload-btn { margin-top: 15px; padding: 8px 24px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border: none; border-radius: 20px; font-size: 14px; cursor: pointer; transition: all 0.3s; }
+        .upload-btn:hover { transform: scale(1.05); opacity: 0.9; }
+        
+        .gender-select { display: flex; gap: 15px; }
+        .tag-item { padding: 10px 20px; border-radius: 25px; background: #f3f4f6; color: #374151; font-size: 14px; cursor: pointer; transition: all 0.3s; border: 2px solid transparent; }
+        .tag-item.active { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border-color: #ec4899; }
+        
+        .tags-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .custom-hobby-input { display: flex; gap: 10px; margin-top: 10px; }
+        .custom-hobby-input input { flex: 1; }
+        .add-btn { padding: 12px 20px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; }
+        
+        .test-section { background: #f9fafb; border-radius: 12px; padding: 15px; }
+        .question-section { margin-bottom: 20px; }
+        .section-title { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; padding-left: 10px; border-left: 3px solid #ec4899; }
+        .question-item { margin-bottom: 18px; }
+        .question-text { font-size: 14px; color: #374151; margin-bottom: 10px; line-height: 1.5; }
+        .likert-options { display: flex; justify-content: space-between; }
+        .likert-option { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #e5e7eb; color: #6b7280; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .likert-option.active { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; transform: scale(1.1); }
+        .likert-labels { display: flex; justify-content: space-between; margin-top: 8px; }
+        .likert-labels span { font-size: 10px; color: #9ca3af; }
+        
+        .submit-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 25px; }
+        
+        .community-container { padding: 20px; }
+        .community-header { text-align: center; margin-bottom: 25px; }
+        .community-header h2 { font-size: 22px; color: #1f2937; margin-bottom: 8px; }
+        .community-header p { font-size: 14px; color: #6b7280; }
+        
+        .loading-overlay { display: flex; justify-content: center; align-items: center; padding: 50px; }
+        .loading-spinner { width: 40px; height: 40px; border: 4px solid #f3f4f6; border-top: 4px solid #ec4899; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .empty-state { text-align: center; padding: 50px 20px; }
+        .empty-icon { font-size: 64px; margin-bottom: 15px; }
+        .empty-text { font-size: 14px; color: #6b7280; margin-bottom: 20px; }
+        .empty-btn { padding: 12px 30px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border: none; border-radius: 25px; cursor: pointer; font-size: 14px; }
+        
+        .community-list { display: flex; flex-direction: column; gap: 15px; }
+        .community-card { background: #fff; border-radius: 16px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; gap: 12px; }
+        .community-avatar { width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 24px; overflow: hidden; }
+        .community-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .community-info { flex: 1; }
+        .community-name { font-size: 16px; font-weight: 600; color: #1f2937; }
+        .community-detail { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+        .community-signature { font-size: 13px; color: #6b7280; margin-top: 5px; }
+        .community-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+        .mini-tag { padding: 4px 10px; background: #fce7f3; color: #ec4899; border-radius: 12px; font-size: 11px; }
+        .hobby-tag { background: #e0e7ff; color: #6366f1; }
+        
+        .community-actions { display: flex; flex-direction: column; gap: 8px; }
+        .match-btn, .add-friend-btn { padding: 8px 15px; border: none; border-radius: 20px; font-size: 12px; cursor: pointer; }
+        .match-btn { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        .add-friend-btn { background: #f3f4f6; color: #374151; }
+        .status-btn { padding: 8px 15px; border: none; border-radius: 20px; font-size: 12px; background: #f3f4f6; color: #9ca3af; }
+        
+        .profile-container { padding: 20px; }
+        .profile-card { background: #fff; border-radius: 16px; padding: 25px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .profile-header { text-align: center; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto; overflow: hidden; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name { font-size: 20px; font-weight: 600; color: #1f2937; margin-top: 15px; }
+        .profile-gender { font-size: 14px; color: #6b7280; margin-top: 5px; }
+        
+        .profile-info { margin-top: 25px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+        .info-label { font-size: 14px; color: #9ca3af; }
+        .info-value { font-size: 14px; color: #1f2937; }
+        
+        .profile-qrcode { text-align: center; margin-top: 25px; }
+        .qrcode-container { width: 180px; height: 180px; margin: 0 auto; background: #fff; padding: 10px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .qrcode-canvas { width: 100%; height: 100%; }
+        .match-code { font-size: 12px; color: #6b7280; margin-top: 10px; }
+        
+        .profile-actions { display: flex; gap: 15px; margin-top: 25px; }
+        .profile-actions button { flex: 1; padding: 12px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; }
+        .edit-btn { background: #f3f4f6; color: #374151; }
+        .save-qr-btn { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        
+        .friends-container { padding: 20px; }
+        .friends-header { text-align: center; margin-bottom: 25px; }
+        .friends-header h2 { font-size: 22px; color: #1f2937; margin-bottom: 8px; }
+        .friends-header p { font-size: 14px; color: #6b7280; }
+        
+        .friends-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .friend-tab { flex: 1; padding: 10px; text-align: center; border-radius: 20px; background: #f3f4f6; color: #6b7280; font-size: 13px; cursor: pointer; }
+        .friend-tab.active { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        
+        .friends-list { display: flex; flex-direction: column; gap: 12px; }
+        .friend-card { background: #fff; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .friend-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
+        .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* 好友名片模态框样式 */
+        .friend-profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #fdf2f8 0%, #e0e7ff 100%);
+            z-index: 200;
+            overflow-y: auto;
+        }
+        .friend-profile-content {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .friend-profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 10px 0;
+        }
+        .friend-profile-back {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .friend-profile-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        .friend-profile-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .friend-profile-actions {
+            margin-top: 25px;
+        }
+        .chat-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .chat-btn:active {
+            transform: scale(0.98);
+        }
+        .friend-info { flex: 1; }
+        .friend-name { font-size: 15px; font-weight: 600; color: #1f2937; }
+        .friend-last-msg { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+        
+        .friend-request-card { background: #fff; border-radius: 12px; padding: 15px; }
+        .request-info { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .request-actions { display: flex; gap: 10px; }
+        .request-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-size: 13px; cursor: pointer; }
+        .accept-btn { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        .reject-btn { background: #f3f4f6; color: #6b7280; }
+        
+        .unread-badge { background: #ef4444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+        
+        .chat-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 100; display: flex; flex-direction: column; }
+        .chat-header { display: flex; align-items: center; padding: 15px 20px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        .chat-back { background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .chat-title { flex: 1; text-align: center; font-size: 17px; font-weight: 600; }
+        
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; }
+        .chat-message { display: flex; margin-bottom: 15px; }
+        .chat-message.mine { flex-direction: column; align-items: flex-end; }
+        .chat-message.theirs { flex-direction: row; align-items: flex-start; gap: 10px; }
+        
+        .message-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #a855f7); display: flex; align-items: center; justify-content: center; font-size: 16px; overflow: hidden; flex-shrink: 0; }
+        .message-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .message-bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; }
+        .mine-bubble { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border-bottom-right-radius: 5px; }
+        .their-bubble { background: #f3f4f6; color: #1f2937; border-bottom-left-radius: 5px; }
+        
+        .message-content { font-size: 14px; line-height: 1.5; }
+        .message-time { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+        
+        .chat-input-area { display: flex; padding: 15px; border-top: 1px solid #f3f4f6; background: #fff; }
+        .chat-input { flex: 1; padding: 12px 18px; border: 1px solid #e5e7eb; border-radius: 25px; font-size: 14px; outline: none; }
+        .send-btn { padding: 12px 25px; background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; border: none; border-radius: 25px; margin-left: 10px; cursor: pointer; font-size: 14px; }
+        
+        .match-result-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; }
+        .match-result-modal { background: #fff; border-radius: 20px; padding: 30px; width: 90%; max-width: 350px; }
+        .match-score-circle { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #ec4899, #a855f7); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 15px; }
+        .match-score { font-size: 40px; font-weight: 700; color: #fff; }
+        .match-label { font-size: 12px; color: rgba(255,255,255,0.8); }
+        
+        .match-relation { text-align: center; margin-bottom: 20px; }
+        .relation-badge { display: inline-block; padding: 6px 20px; background: linear-gradient(135deg, #10b981, #34d399); color: #fff; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        
+        .match-result-modal h3 { text-align: center; font-size: 18px; color: #1f2937; margin-bottom: 15px; }
+        .match-analysis { font-size: 14px; color: #6b7280; line-height: 1.6; text-align: center; margin-bottom: 20px; }
+        
+        .match-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px; }
+        .match-tag { padding: 6px 14px; background: #fce7f3; color: #ec4899; border-radius: 16px; font-size: 12px; }
+        
+        .match-actions { display: flex; gap: 15px; }
+        .match-actions button { flex: 1; padding: 12px; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; }
+        .close-match-btn { background: #f3f4f6; color: #6b7280; }
+        .add-friend-from-match-btn { background: linear-gradient(135deg, #ec4899, #a855f7); color: #fff; }
+        .chat-from-match-btn { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+        
+        .hearts-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+        .floating-heart { position: absolute; font-size: 30px; opacity: 0; }
+        
+        .edit-profile-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; z-index: 100; padding: 20px; overflow-y: auto; }
+        .edit-header { display: flex; align-items: center; margin-bottom: 25px; }
+        .edit-back { font-size: 24px; cursor: pointer; margin-right: 15px; }
+        .edit-title { font-size: 18px; font-weight: 600; color: #1f2937; }
+        
+        /* 匹配进度条样式 */
+        .match-progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .match-progress-content {
+            background: linear-gradient(135deg, #fff 0%, #fdf2f8 100%);
+            border-radius: 20px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.3s ease;
+            max-width: 300px;
+            width: 90%;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .match-progress-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .match-progress-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+        .match-progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .match-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ec4899, #a855f7);
+            border-radius: 5px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        .match-progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .match-progress-text {
+            font-size: 14px;
+            color: #6b7280;
+            min-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="page-container">
+        <!-- 匹配进度条遮罩 -->
+        <div v-if="matchLoading" class="match-progress-overlay">
+            <div class="match-progress-content">
+                <div class="match-progress-icon">🔮</div>
+                <div class="match-progress-title">正在分析匹配...</div>
+                <div class="match-progress-bar">
+                    <div class="match-progress-fill" :style="{ width: matchProgress + '%' }"></div>
+                </div>
+                <div class="match-progress-text">{{ matchProgressText }}</div>
+            </div>
+        </div>
+        
+        <div class="header">
+            <div class="back-btn" @click="goBack">←</div>
+            <div class="header-title">💕 码上交友</div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <div class="tabs-wrapper" v-if="hasProfile || isEditingProfile">
+            <div class="tab-item" :class="{ active: activeTab === 'community' }" @click="activeTab = 'community'">交友社区</div>
+            <div class="tab-item" :class="{ active: activeTab === 'profile' }" @click="activeTab = 'profile'">我的名片</div>
+            <div class="tab-item" :class="{ active: activeTab === 'friends' }" @click="activeTab = 'friends'">我的好友</div>
+        </div>
+
+        <div v-if="!hasProfile" class="create-profile-container">
+            <div class="create-header">
+                <h2>🎭 创建你的交友名片</h2>
+                <p>填写信息让更多人认识你</p>
+            </div>
+            <div class="form-section">
+                <div class="form-group photo-upload-group">
+                    <label>头像</label>
+                    <div class="photo-upload-container">
+                        <div class="photo-preview" :style="{ backgroundImage: profile.photo ? `url(${profile.photo})` : 'none' }">
+                            <div v-if="!profile.photo" class="photo-placeholder">
+                                <span class="placeholder-icon">📷</span>
+                                <span class="placeholder-text">上传头像</span>
+                            </div>
+                            <div v-if="profile.photo" class="photo-remove" @click="removePhoto">✕</div>
+                        </div>
+                        <input type="file" ref="avatarInputRef" accept="image/*" style="display:none" @change="handlePhotoUpload" />
+                        <button type="button" class="upload-btn" @click="triggerUpload">
+                            {{ profile.photo ? '更换头像' : '上传头像' }}
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input v-model="profile.nickname" type="text" placeholder="请输入昵称" />
+                </div>
+                
+                <div class="form-group">
+                    <label>性别</label>
+                    <div class="gender-select">
+                        <div class="tag-item" :class="{ active: profile.gender === 'male' }" @click="profile.gender = 'male'">👨 男生</div>
+                        <div class="tag-item" :class="{ active: profile.gender === 'female' }" @click="profile.gender = 'female'">👩 女生</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>出生日期</label>
+                    <input v-model="profile.birthday" type="date" placeholder="请选择出生日期" />
+                </div>
+                
+                <div class="form-group">
+                    <label>个性签名</label>
+                    <textarea v-model="profile.signature" placeholder="一句话介绍自己"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>性格标签（选择3-5个）</label>
+                    <div class="tags-container">
+                        <div v-for="tag in personalityTags" :key="tag" class="tag-item" :class="{ active: profile.personality.includes(tag) }" @click="toggleTag('personality', tag)">{{ tag }}</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>兴趣爱好（选择3-5个）</label>
+                    <div class="tags-container">
+                        <div v-for="tag in hobbyTags" :key="tag" class="tag-item" :class="{ active: profile.hobbies.includes(tag) }" @click="toggleTag('hobbies', tag)">{{ tag }}</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>自定义爱好</label>
+                    <div class="custom-hobby-input">
+                        <input v-model="customHobby" type="text" placeholder="输入自定义爱好" />
+                        <button class="add-btn" @click="addCustomHobby">添加</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>可见性设置</label>
+                    <div class="gender-select">
+                        <div class="tag-item" :class="{ active: profile.isPublic === false }" @click="profile.isPublic = false">🔒 私密名片（仅自己可见）</div>
+                        <div class="tag-item" :class="{ active: profile.isPublic === true }" @click="profile.isPublic = true">🌍 公开名片（交友社区可见）</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>性格测试</label>
+                    <div class="test-section">
+                        <div class="question-section">
+                            <div class="section-title">🎨 开放性</div>
+                            <div class="question-item"><div class="question-text">1. 我喜欢尝试新的事物和体验</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[0] === 1 }]" @click="selectBigFiveAnswer(0, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[0] === 2 }]" @click="selectBigFiveAnswer(0, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[0] === 3 }]" @click="selectBigFiveAnswer(0, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[0] === 4 }]" @click="selectBigFiveAnswer(0, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[0] === 5 }]" @click="selectBigFiveAnswer(0, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">2. 我对艺术和文化活动很感兴趣</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[1] === 1 }]" @click="selectBigFiveAnswer(1, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[1] === 2 }]" @click="selectBigFiveAnswer(1, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[1] === 3 }]" @click="selectBigFiveAnswer(1, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[1] === 4 }]" @click="selectBigFiveAnswer(1, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[1] === 5 }]" @click="selectBigFiveAnswer(1, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">3. 我经常有创造性的想法</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[2] === 1 }]" @click="selectBigFiveAnswer(2, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[2] === 2 }]" @click="selectBigFiveAnswer(2, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[2] === 3 }]" @click="selectBigFiveAnswer(2, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[2] === 4 }]" @click="selectBigFiveAnswer(2, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[2] === 5 }]" @click="selectBigFiveAnswer(2, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">4. 我喜欢思考抽象的概念</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[3] === 1 }]" @click="selectBigFiveAnswer(3, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[3] === 2 }]" @click="selectBigFiveAnswer(3, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[3] === 3 }]" @click="selectBigFiveAnswer(3, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[3] === 4 }]" @click="selectBigFiveAnswer(3, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[3] === 5 }]" @click="selectBigFiveAnswer(3, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">📋 尽责性</div>
+                            <div class="question-item"><div class="question-text">5. 我做事总是有条不紊</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[4] === 1 }]" @click="selectBigFiveAnswer(4, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[4] === 2 }]" @click="selectBigFiveAnswer(4, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[4] === 3 }]" @click="selectBigFiveAnswer(4, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[4] === 4 }]" @click="selectBigFiveAnswer(4, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[4] === 5 }]" @click="selectBigFiveAnswer(4, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">6. 我非常注重细节</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[5] === 1 }]" @click="selectBigFiveAnswer(5, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[5] === 2 }]" @click="selectBigFiveAnswer(5, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[5] === 3 }]" @click="selectBigFiveAnswer(5, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[5] === 4 }]" @click="selectBigFiveAnswer(5, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[5] === 5 }]" @click="selectBigFiveAnswer(5, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">7. 我总是按时完成任务</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[6] === 1 }]" @click="selectBigFiveAnswer(6, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[6] === 2 }]" @click="selectBigFiveAnswer(6, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[6] === 3 }]" @click="selectBigFiveAnswer(6, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[6] === 4 }]" @click="selectBigFiveAnswer(6, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[6] === 5 }]" @click="selectBigFiveAnswer(6, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">8. 我善于制定计划并坚持执行</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[7] === 1 }]" @click="selectBigFiveAnswer(7, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[7] === 2 }]" @click="selectBigFiveAnswer(7, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[7] === 3 }]" @click="selectBigFiveAnswer(7, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[7] === 4 }]" @click="selectBigFiveAnswer(7, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[7] === 5 }]" @click="selectBigFiveAnswer(7, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">🎉 外向性</div>
+                            <div class="question-item"><div class="question-text">9. 我喜欢参加社交活动</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[8] === 1 }]" @click="selectBigFiveAnswer(8, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[8] === 2 }]" @click="selectBigFiveAnswer(8, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[8] === 3 }]" @click="selectBigFiveAnswer(8, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[8] === 4 }]" @click="selectBigFiveAnswer(8, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[8] === 5 }]" @click="selectBigFiveAnswer(8, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">10. 我很容易交到新朋友</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[9] === 1 }]" @click="selectBigFiveAnswer(9, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[9] === 2 }]" @click="selectBigFiveAnswer(9, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[9] === 3 }]" @click="selectBigFiveAnswer(9, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[9] === 4 }]" @click="selectBigFiveAnswer(9, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[9] === 5 }]" @click="selectBigFiveAnswer(9, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">11. 我在人群中感到精力充沛</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[10] === 1 }]" @click="selectBigFiveAnswer(10, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[10] === 2 }]" @click="selectBigFiveAnswer(10, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[10] === 3 }]" @click="selectBigFiveAnswer(10, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[10] === 4 }]" @click="selectBigFiveAnswer(10, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[10] === 5 }]" @click="selectBigFiveAnswer(10, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">12. 我喜欢成为关注的焦点</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[11] === 1 }]" @click="selectBigFiveAnswer(11, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[11] === 2 }]" @click="selectBigFiveAnswer(11, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[11] === 3 }]" @click="selectBigFiveAnswer(11, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[11] === 4 }]" @click="selectBigFiveAnswer(11, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[11] === 5 }]" @click="selectBigFiveAnswer(11, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">💝 宜人性</div>
+                            <div class="question-item"><div class="question-text">13. 我总是乐于助人</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[12] === 1 }]" @click="selectBigFiveAnswer(12, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[12] === 2 }]" @click="selectBigFiveAnswer(12, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[12] === 3 }]" @click="selectBigFiveAnswer(12, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[12] === 4 }]" @click="selectBigFiveAnswer(12, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[12] === 5 }]" @click="selectBigFiveAnswer(12, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">14. 我善于理解他人的感受</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[13] === 1 }]" @click="selectBigFiveAnswer(13, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[13] === 2 }]" @click="selectBigFiveAnswer(13, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[13] === 3 }]" @click="selectBigFiveAnswer(13, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[13] === 4 }]" @click="selectBigFiveAnswer(13, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[13] === 5 }]" @click="selectBigFiveAnswer(13, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">15. 我容易原谅别人</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[14] === 1 }]" @click="selectBigFiveAnswer(14, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[14] === 2 }]" @click="selectBigFiveAnswer(14, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[14] === 3 }]" @click="selectBigFiveAnswer(14, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[14] === 4 }]" @click="selectBigFiveAnswer(14, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[14] === 5 }]" @click="selectBigFiveAnswer(14, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">16. 我喜欢与他人合作</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[15] === 1 }]" @click="selectBigFiveAnswer(15, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[15] === 2 }]" @click="selectBigFiveAnswer(15, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[15] === 3 }]" @click="selectBigFiveAnswer(15, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[15] === 4 }]" @click="selectBigFiveAnswer(15, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[15] === 5 }]" @click="selectBigFiveAnswer(15, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">🎭 神经质</div>
+                            <div class="question-item"><div class="question-text">17. 我经常感到焦虑或紧张</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[16] === 1 }]" @click="selectBigFiveAnswer(16, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[16] === 2 }]" @click="selectBigFiveAnswer(16, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[16] === 3 }]" @click="selectBigFiveAnswer(16, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[16] === 4 }]" @click="selectBigFiveAnswer(16, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[16] === 5 }]" @click="selectBigFiveAnswer(16, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">18. 我情绪波动较大</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[17] === 1 }]" @click="selectBigFiveAnswer(17, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[17] === 2 }]" @click="selectBigFiveAnswer(17, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[17] === 3 }]" @click="selectBigFiveAnswer(17, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[17] === 4 }]" @click="selectBigFiveAnswer(17, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[17] === 5 }]" @click="selectBigFiveAnswer(17, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">19. 我容易感到沮丧</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[18] === 1 }]" @click="selectBigFiveAnswer(18, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[18] === 2 }]" @click="selectBigFiveAnswer(18, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[18] === 3 }]" @click="selectBigFiveAnswer(18, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[18] === 4 }]" @click="selectBigFiveAnswer(18, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[18] === 5 }]" @click="selectBigFiveAnswer(18, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">20. 我对批评很敏感</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[19] === 1 }]" @click="selectBigFiveAnswer(19, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[19] === 2 }]" @click="selectBigFiveAnswer(19, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[19] === 3 }]" @click="selectBigFiveAnswer(19, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[19] === 4 }]" @click="selectBigFiveAnswer(19, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[19] === 5 }]" @click="selectBigFiveAnswer(19, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="submit-btn" @click="saveProfile">保存名片</button>
+            </div>
+        </div>
+
+        <div v-if="hasProfile && activeTab === 'community'" class="community-container">
+            <div class="community-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2>🌍 交友社区</h2>
+                    <p>发现志同道合的朋友</p>
+                </div>
+                <button class="match-btn" style="padding: 8px 15px; font-size: 13px;" @click="showMatchModal = true">🔮 默契匹配</button>
+            </div>
+            
+            <div v-if="communityLoading" class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+            
+            <div v-else-if="communityList.length === 0" class="empty-state">
+                <div class="empty-icon">👥</div>
+                <div class="empty-text">社区暂无其他用户</div>
+                <button class="empty-btn" @click="loadCommunity">刷新</button>
+            </div>
+            
+            <div v-else class="community-list">
+                <div v-for="user in communityList" :key="user.userId" class="community-card">
+                    <div class="community-avatar" v-if="user.photo"><img :src="user.photo" /></div>
+                    <div class="community-avatar" v-else>👤</div>
+                    <div class="community-info">
+                        <div class="community-name">{{ user.nickname }}</div>
+                        <div class="community-detail">{{ user.gender === 'male' ? '👨' : '👩' }} {{ user.age }}岁</div>
+                        <div v-if="user.signature" class="community-signature">{{ user.signature }}</div>
+                        <div class="community-tags">
+                            <span v-for="tag in (user.personality || []).slice(0, 3)" :key="tag" class="mini-tag">{{ tag }}</span>
+                            <span v-for="tag in (user.hobbies || []).slice(0, 2)" :key="tag" class="mini-tag hobby-tag">{{ tag }}</span>
+                        </div>
+                    </div>
+                    <div class="community-actions">
+                        <button class="match-btn" @click="startMatch(user)">🔮 匹配</button>
+                        <button v-if="user.friendStatus === 'none'" class="add-friend-btn" @click="sendFriendRequest(user)">💌 加好友</button>
+                        <button v-else-if="user.friendStatus === 'pending'" class="status-btn">已发送</button>
+                        <button v-else-if="user.friendStatus === 'received'" class="add-friend-btn" @click="acceptRequestFromCommunity(user)">同意</button>
+                        <button v-else-if="user.friendStatus === 'friend'" class="status-btn">已是好友</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="hasProfile && activeTab === 'profile'" class="profile-container">
+            <div v-if="!myProfile" class="empty-state">
+                <div class="empty-icon">👤</div>
+                <div class="empty-text">还没有创建交友名片</div>
+            </div>
+            
+            <div v-else class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar" v-if="myProfile.photo"><img :src="myProfile.photo" /></div>
+                    <div class="profile-avatar" v-else>👤</div>
+                    <div class="profile-name">{{ myProfile.nickname }}</div>
+                    <div class="profile-gender">{{ myProfile.gender === 'male' ? '👨 男生' : '👩 女生' }} · {{ myProfile.age }}岁</div>
+                </div>
+
+                <div class="profile-info">
+                    <div class="info-row"><span class="info-label">个性签名</span><span class="info-value">{{ myProfile.signature || '暂无' }}</span></div>
+                    <div class="info-row"><span class="info-label">性格标签</span><span class="info-value">{{ myProfile.personality?.join('、') || '暂无' }}</span></div>
+                    <div class="info-row"><span class="info-label">兴趣爱好</span><span class="info-value">{{ myProfile.hobbies?.join('、') || '暂无' }}</span></div>
+                    <div class="info-row"><span class="info-label">匹配码</span><span class="info-value">{{ myProfile.matchCode || '暂无' }}</span></div>
+                </div>
+
+                <div class="profile-qrcode" v-if="myProfile.qrCodeUrl">
+            <div class="qrcode-container">
+                <img :src="myProfile.qrCodeUrl" alt="二维码" class="qrcode-canvas" />
+            </div>
+            <div class="match-code">匹配码：{{ myProfile.matchCode }}</div>
+        </div>
+        <div class="profile-qrcode" v-else>
+            <div class="qrcode-container" style="background: #f3f4f6;">
+                <canvas ref="qrcodeCanvas" class="qrcode-canvas"></canvas>
+            </div>
+            <div class="match-code">匹配码：{{ myProfile.matchCode }}</div>
+        </div>
+
+                <div class="profile-actions">
+                    <button class="edit-btn" @click="openEditProfile">编辑名片</button>
+                    <button class="save-qr-btn" @click="saveQRCode">保存二维码</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 好友名片查看模态框 -->
+        <div v-if="showFriendProfile && friendProfileData" class="friend-profile-modal">
+            <div class="friend-profile-content">
+                <div class="friend-profile-header">
+                    <div class="friend-profile-back" @click="closeFriendProfile">←</div>
+                    <div class="friend-profile-title">好友名片</div>
+                    <div style="width: 40px;"></div>
+                </div>
+                
+                <div class="friend-profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar" v-if="friendProfileData.photo"><img :src="friendProfileData.photo" /></div>
+                        <div class="profile-avatar" v-else>👤</div>
+                        <div class="profile-name">{{ friendProfileData.nickname }}</div>
+                        <div class="profile-gender">{{ friendProfileData.gender === 'male' ? '👨 男生' : '👩 女生' }} · {{ friendProfileData.age }}岁</div>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="info-row"><span class="info-label">个性签名</span><span class="info-value">{{ friendProfileData.signature || '暂无' }}</span></div>
+                        <div class="info-row"><span class="info-label">性格标签</span><span class="info-value">{{ friendProfileData.personality?.join('、') || '暂无' }}</span></div>
+                        <div class="info-row"><span class="info-label">兴趣爱好</span><span class="info-value">{{ friendProfileData.hobbies?.join('、') || '暂无' }}</span></div>
+                        <div class="info-row"><span class="info-label">匹配码</span><span class="info-value">{{ friendProfileData.matchCode || '暂无' }}</span></div>
+                    </div>
+
+                    <div class="profile-qrcode" v-if="friendProfileData.qrCodeUrl">
+                        <div class="qrcode-container">
+                            <img :src="friendProfileData.qrCodeUrl" alt="二维码" class="qrcode-canvas" />
+                        </div>
+                        <div class="match-code">匹配码：{{ friendProfileData.matchCode }}</div>
+                    </div>
+                </div>
+                
+                <div class="friend-profile-actions">
+                    <button class="chat-btn" @click="() => { closeFriendProfile(); openChat({ friendId: friendProfileData.userId, nickname: friendProfileData.nickname, photo: friendProfileData.photo }); }">💬 发起聊天</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="hasProfile && activeTab === 'friends'" class="friends-container">
+            <div class="friends-header">
+                <h2>👯 我的好友</h2>
+                <p>共 {{ friendsList.length }} 位好友</p>
+            </div>
+            
+            <div class="friends-tabs">
+                <div class="friend-tab" :class="{ active: friendsTab === 'list' }" @click="friendsTab = 'list'">好友列表</div>
+                <div class="friend-tab" :class="{ active: friendsTab === 'requests' }" @click="friendsTab = 'requests'">好友请求</div>
+            </div>
+
+            <div v-if="friendsTab === 'list'">
+                <div v-if="friendsList.length === 0" class="empty-state">
+                    <div class="empty-icon">👥</div>
+                    <div class="empty-text">还没有好友</div>
+                    <button class="empty-btn" @click="activeTab = 'community'">去交友</button>
+                </div>
+                <div v-else class="friends-list">
+                    <div v-for="friend in friendsList" :key="friend.friendId" class="friend-card">
+                        <div class="friend-avatar" @click.stop="viewFriendProfile(friend)" style="cursor:pointer;">
+                            <img v-if="friend.photo" :src="friend.photo" />
+                            <span v-else>👤</span>
+                        </div>
+                        <div class="friend-info" @click="openChat(friend)">
+                            <div class="friend-name">{{ friend.nickname }} <span v-if="friend.unreadCount > 0" class="unread-badge">{{ friend.unreadCount }}</span></div>
+                            <div class="friend-last-msg">{{ friend.lastMessage || '暂无消息' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="friendsTab === 'requests'">
+                <div v-if="friendRequests.length === 0" class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <div class="empty-text">暂无好友请求</div>
+                </div>
+                <div v-else class="friends-list">
+                    <div v-for="req in friendRequests" :key="req.id" class="friend-request-card">
+                        <div class="request-info">
+                            <div class="friend-avatar" v-if="req.senderPhoto"><img :src="req.senderPhoto" /></div>
+                            <div class="friend-avatar" v-else>👤</div>
+                            <div>
+                                <div class="friend-name">{{ req.senderNickname }}</div>
+                                <div v-if="req.message" class="friend-last-msg">留言：{{ req.message }}</div>
+                            </div>
+                        </div>
+                        <div class="request-actions">
+                            <button class="request-btn accept-btn" @click="acceptFriendRequest(req.requestId)">接受</button>
+                            <button class="request-btn reject-btn" @click="rejectFriendRequest(req.requestId)">拒绝</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showChat" class="chat-container">
+            <div class="chat-header">
+                <button class="chat-back" @click="closeChat">← 返回</button>
+                <div class="chat-title">{{ currentChatFriend?.nickname || '聊天' }}</div>
+            </div>
+            
+            <div class="chat-messages" ref="chatMessagesRef">
+                <div v-for="msg in chatMessages" :key="msg.messageId || msg.id">
+                    <div v-if="isMyMessage(msg)" class="chat-message mine">
+                        <div class="message-bubble mine-bubble"><div class="message-content">{{ msg.content }}</div></div>
+                        <div class="message-time">{{ msg.isRead || msg.is_read ? '已读' : '未读' }}</div>
+                    </div>
+                    <div v-else class="chat-message theirs">
+                        <div class="message-avatar" v-if="currentChatFriend?.photo"><img :src="currentChatFriend.photo" /></div>
+                        <div class="message-avatar" v-else>👤</div>
+                        <div class="message-bubble their-bubble"><div class="message-content">{{ msg.content }}</div></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input v-model="chatInput" class="chat-input" placeholder="输入消息..." @keyup.enter="sendMessage" />
+                <button class="send-btn" @click="sendMessage">发送</button>
+            </div>
+        </div>
+
+        <div v-if="showMatchResult" class="match-result-overlay" @click.self="closeMatchResult">
+            <div class="match-result-modal">
+                <div class="match-score-circle">
+                    <div class="match-score">{{ matchResult?.overallScore || 0 }}</div>
+                    <div class="match-label">适合关系</div>
+                </div>
+                <div class="match-relation">
+                    <span class="relation-badge">{{ matchResult?.relation || '朋友' }}</span>
+                </div>
+                <h3>🌟 AI匹配分析</h3>
+                <div class="match-analysis">{{ matchResult?.analysis || '暂无分析' }}</div>
+                <div class="match-tags">
+                    <span v-for="tag in matchResult?.commonFeatures || []" :key="tag" class="match-tag">🎯 {{ tag }}</span>
+                    <span v-for="tag in matchResult?.complementaryFeatures || []" :key="tag" class="match-tag" style="background:#e0e7ff;color:#6366f1;">⚖️ {{ tag }}</span>
+                </div>
+                <div class="match-actions">
+                    <button class="close-match-btn" @click="closeMatchResult">关闭</button>
+                    <button v-if="isFriend(matchTargetUser?.userId)" class="chat-from-match-btn" @click="goChatFromMatch">💬 去聊天</button>
+                    <button v-else class="add-friend-from-match-btn" @click="addFriendFromMatch">加好友</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showHearts" class="hearts-container" ref="heartsContainer"></div>
+
+        <div v-if="showMatchModal" class="match-result-overlay" @click.self="showMatchModal = false">
+            <div class="match-result-modal" style="max-width: 320px;">
+                <h3 style="text-align: center; margin-bottom: 20px;">🔮 默契匹配</h3>
+                <p style="text-align: center; color: #6b7280; margin-bottom: 15px; font-size: 14px;">输入对方的匹配码进行匹配</p>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <input v-model="matchCodeInput" type="text" placeholder="请输入6位匹配码" style="width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none; text-align: center; letter-spacing: 2px;" />
+                    <button class="submit-btn" @click="matchByCode" :disabled="!matchCodeInput.trim()">开始匹配</button>
+                    <div style="text-align: center; color: #9ca3af; font-size: 12px;">或</div>
+                    <button class="submit-btn" style="background: linear-gradient(135deg, #10b981, #34d399);" @click="scanQRCode">📷 扫描二维码</button>
+                </div>
+                <button class="close-match-btn" style="margin-top: 15px;" @click="showMatchModal = false">关闭</button>
+            </div>
+        </div>
+
+        <div v-if="isEditingProfile" class="edit-profile-modal">
+            <div class="edit-header">
+                <div class="edit-back" @click="closeEditProfile">←</div>
+                <div class="edit-title">编辑名片</div>
+            </div>
+            <div class="form-section">
+                <div class="form-group photo-upload-group">
+                    <label>头像</label>
+                    <div class="photo-upload-container">
+                        <div class="photo-preview" :style="{ backgroundImage: profile.photo ? `url(${profile.photo})` : 'none' }">
+                            <div v-if="!profile.photo" class="photo-placeholder">
+                                <span class="placeholder-icon">📷</span>
+                                <span class="placeholder-text">上传头像</span>
+                            </div>
+                            <div v-if="profile.photo" class="photo-remove" @click="removePhoto">✕</div>
+                        </div>
+                        <input type="file" ref="avatarInputRef" accept="image/*" style="display:none" @change="handlePhotoUpload" />
+                        <button type="button" class="upload-btn" @click="triggerUpload">
+                            {{ profile.photo ? '更换头像' : '上传头像' }}
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>昵称</label>
+                    <input v-model="profile.nickname" type="text" placeholder="请输入昵称" />
+                </div>
+                <div class="form-group">
+                    <label>性别</label>
+                    <div class="gender-select">
+                        <div class="tag-item" :class="{ active: profile.gender === 'male' }" @click="profile.gender = 'male'">👨 男生</div>
+                        <div class="tag-item" :class="{ active: profile.gender === 'female' }" @click="profile.gender = 'female'">👩 女生</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>出生日期</label>
+                    <input v-model="profile.birthday" type="date" placeholder="请选择出生日期" />
+                </div>
+                <div class="form-group">
+                    <label>个性签名</label>
+                    <textarea v-model="profile.signature" placeholder="一句话介绍自己"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>性格标签（选择3-5个）</label>
+                    <div class="tags-container">
+                        <div v-for="tag in personalityTags" :key="tag" class="tag-item" :class="{ active: profile.personality.includes(tag) }" @click="toggleTag('personality', tag)">{{ tag }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>兴趣爱好（选择3-5个）</label>
+                    <div class="tags-container">
+                        <div v-for="tag in hobbyTags" :key="tag" class="tag-item" :class="{ active: profile.hobbies.includes(tag) }" @click="toggleTag('hobbies', tag)">{{ tag }}</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>自定义爱好</label>
+                    <div class="custom-hobby-input">
+                        <input v-model="customHobby" type="text" placeholder="输入自定义爱好" />
+                        <button class="add-btn" @click="addCustomHobby">添加</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>可见性设置</label>
+                    <div class="gender-select">
+                        <div class="tag-item" :class="{ active: profile.isPublic === false }" @click="profile.isPublic = false">🔒 私密名片（仅自己可见）</div>
+                        <div class="tag-item" :class="{ active: profile.isPublic === true }" @click="profile.isPublic = true">🌍 公开名片（交友社区可见）</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>性格测试（可重新选择）</label>
+                    <div class="test-section">
+                        <div class="question-section">
+                            <div class="section-title">🎨 开放性</div>
+                            <div class="question-item"><div class="question-text">1. 我喜欢尝试新的事物和体验</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[0] === 1 }]" @click="selectBigFiveAnswer(0, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[0] === 2 }]" @click="selectBigFiveAnswer(0, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[0] === 3 }]" @click="selectBigFiveAnswer(0, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[0] === 4 }]" @click="selectBigFiveAnswer(0, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[0] === 5 }]" @click="selectBigFiveAnswer(0, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">2. 我对艺术和文化活动很感兴趣</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[1] === 1 }]" @click="selectBigFiveAnswer(1, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[1] === 2 }]" @click="selectBigFiveAnswer(1, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[1] === 3 }]" @click="selectBigFiveAnswer(1, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[1] === 4 }]" @click="selectBigFiveAnswer(1, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[1] === 5 }]" @click="selectBigFiveAnswer(1, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">3. 我经常有创造性的想法</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[2] === 1 }]" @click="selectBigFiveAnswer(2, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[2] === 2 }]" @click="selectBigFiveAnswer(2, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[2] === 3 }]" @click="selectBigFiveAnswer(2, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[2] === 4 }]" @click="selectBigFiveAnswer(2, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[2] === 5 }]" @click="selectBigFiveAnswer(2, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">4. 我喜欢思考抽象的概念</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[3] === 1 }]" @click="selectBigFiveAnswer(3, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[3] === 2 }]" @click="selectBigFiveAnswer(3, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[3] === 3 }]" @click="selectBigFiveAnswer(3, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[3] === 4 }]" @click="selectBigFiveAnswer(3, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[3] === 5 }]" @click="selectBigFiveAnswer(3, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">📋 尽责性</div>
+                            <div class="question-item"><div class="question-text">5. 我做事总是有条不紊</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[4] === 1 }]" @click="selectBigFiveAnswer(4, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[4] === 2 }]" @click="selectBigFiveAnswer(4, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[4] === 3 }]" @click="selectBigFiveAnswer(4, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[4] === 4 }]" @click="selectBigFiveAnswer(4, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[4] === 5 }]" @click="selectBigFiveAnswer(4, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">6. 我非常注重细节</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[5] === 1 }]" @click="selectBigFiveAnswer(5, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[5] === 2 }]" @click="selectBigFiveAnswer(5, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[5] === 3 }]" @click="selectBigFiveAnswer(5, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[5] === 4 }]" @click="selectBigFiveAnswer(5, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[5] === 5 }]" @click="selectBigFiveAnswer(5, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">7. 我总是按时完成任务</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[6] === 1 }]" @click="selectBigFiveAnswer(6, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[6] === 2 }]" @click="selectBigFiveAnswer(6, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[6] === 3 }]" @click="selectBigFiveAnswer(6, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[6] === 4 }]" @click="selectBigFiveAnswer(6, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[6] === 5 }]" @click="selectBigFiveAnswer(6, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">8. 我善于制定计划并坚持执行</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[7] === 1 }]" @click="selectBigFiveAnswer(7, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[7] === 2 }]" @click="selectBigFiveAnswer(7, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[7] === 3 }]" @click="selectBigFiveAnswer(7, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[7] === 4 }]" @click="selectBigFiveAnswer(7, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[7] === 5 }]" @click="selectBigFiveAnswer(7, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">🎉 外向性</div>
+                            <div class="question-item"><div class="question-text">9. 我喜欢参加社交活动</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[8] === 1 }]" @click="selectBigFiveAnswer(8, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[8] === 2 }]" @click="selectBigFiveAnswer(8, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[8] === 3 }]" @click="selectBigFiveAnswer(8, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[8] === 4 }]" @click="selectBigFiveAnswer(8, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[8] === 5 }]" @click="selectBigFiveAnswer(8, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">10. 我很容易交到新朋友</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[9] === 1 }]" @click="selectBigFiveAnswer(9, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[9] === 2 }]" @click="selectBigFiveAnswer(9, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[9] === 3 }]" @click="selectBigFiveAnswer(9, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[9] === 4 }]" @click="selectBigFiveAnswer(9, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[9] === 5 }]" @click="selectBigFiveAnswer(9, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">11. 我在人群中感到精力充沛</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[10] === 1 }]" @click="selectBigFiveAnswer(10, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[10] === 2 }]" @click="selectBigFiveAnswer(10, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[10] === 3 }]" @click="selectBigFiveAnswer(10, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[10] === 4 }]" @click="selectBigFiveAnswer(10, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[10] === 5 }]" @click="selectBigFiveAnswer(10, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">12. 我喜欢成为关注的焦点</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[11] === 1 }]" @click="selectBigFiveAnswer(11, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[11] === 2 }]" @click="selectBigFiveAnswer(11, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[11] === 3 }]" @click="selectBigFiveAnswer(11, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[11] === 4 }]" @click="selectBigFiveAnswer(11, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[11] === 5 }]" @click="selectBigFiveAnswer(11, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">💝 宜人性</div>
+                            <div class="question-item"><div class="question-text">13. 我总是乐于助人</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[12] === 1 }]" @click="selectBigFiveAnswer(12, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[12] === 2 }]" @click="selectBigFiveAnswer(12, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[12] === 3 }]" @click="selectBigFiveAnswer(12, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[12] === 4 }]" @click="selectBigFiveAnswer(12, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[12] === 5 }]" @click="selectBigFiveAnswer(12, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">14. 我善于理解他人的感受</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[13] === 1 }]" @click="selectBigFiveAnswer(13, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[13] === 2 }]" @click="selectBigFiveAnswer(13, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[13] === 3 }]" @click="selectBigFiveAnswer(13, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[13] === 4 }]" @click="selectBigFiveAnswer(13, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[13] === 5 }]" @click="selectBigFiveAnswer(13, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">15. 我容易原谅别人</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[14] === 1 }]" @click="selectBigFiveAnswer(14, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[14] === 2 }]" @click="selectBigFiveAnswer(14, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[14] === 3 }]" @click="selectBigFiveAnswer(14, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[14] === 4 }]" @click="selectBigFiveAnswer(14, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[14] === 5 }]" @click="selectBigFiveAnswer(14, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">16. 我喜欢与他人合作</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[15] === 1 }]" @click="selectBigFiveAnswer(15, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[15] === 2 }]" @click="selectBigFiveAnswer(15, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[15] === 3 }]" @click="selectBigFiveAnswer(15, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[15] === 4 }]" @click="selectBigFiveAnswer(15, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[15] === 5 }]" @click="selectBigFiveAnswer(15, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                        <div class="question-section">
+                            <div class="section-title">🎭 神经质</div>
+                            <div class="question-item"><div class="question-text">17. 我经常感到焦虑或紧张</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[16] === 1 }]" @click="selectBigFiveAnswer(16, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[16] === 2 }]" @click="selectBigFiveAnswer(16, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[16] === 3 }]" @click="selectBigFiveAnswer(16, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[16] === 4 }]" @click="selectBigFiveAnswer(16, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[16] === 5 }]" @click="selectBigFiveAnswer(16, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">18. 我情绪波动较大</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[17] === 1 }]" @click="selectBigFiveAnswer(17, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[17] === 2 }]" @click="selectBigFiveAnswer(17, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[17] === 3 }]" @click="selectBigFiveAnswer(17, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[17] === 4 }]" @click="selectBigFiveAnswer(17, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[17] === 5 }]" @click="selectBigFiveAnswer(17, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">19. 我容易感到沮丧</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[18] === 1 }]" @click="selectBigFiveAnswer(18, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[18] === 2 }]" @click="selectBigFiveAnswer(18, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[18] === 3 }]" @click="selectBigFiveAnswer(18, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[18] === 4 }]" @click="selectBigFiveAnswer(18, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[18] === 5 }]" @click="selectBigFiveAnswer(18, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                            <div class="question-item"><div class="question-text">20. 我对批评很敏感</div><div class="likert-options"><div :class="['likert-option', { active: profile.testAnswers[19] === 1 }]" @click="selectBigFiveAnswer(19, 1)">1</div><div :class="['likert-option', { active: profile.testAnswers[19] === 2 }]" @click="selectBigFiveAnswer(19, 2)">2</div><div :class="['likert-option', { active: profile.testAnswers[19] === 3 }]" @click="selectBigFiveAnswer(19, 3)">3</div><div :class="['likert-option', { active: profile.testAnswers[19] === 4 }]" @click="selectBigFiveAnswer(19, 4)">4</div><div :class="['likert-option', { active: profile.testAnswers[19] === 5 }]" @click="selectBigFiveAnswer(19, 5)">5</div></div><div class="likert-labels"><span>非常不符合</span><span>不太符合</span><span>一般</span><span>比较符合</span><span>非常符合</span></div></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="submit-btn" @click="saveProfile">保存修改</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive, onMounted, nextTick } = Vue;
+        const app = createApp({
+            setup() {
+                const BASE_URL = '/api';
+                const userId = parseInt(localStorage.getItem('userId') || '', 10);
+                if (isNaN(userId) || userId <= 0) {
+                    alert('请先登录');
+                    window.location.href = 'login.html';
+                }
+                
+                const activeTab = ref('community');
+                const friendsTab = ref('list');
+                const loading = ref(false);
+                const matchLoading = ref(false);
+                const matchProgress = ref(0);
+                const matchProgressText = ref('');
+                const showFriendProfile = ref(false);
+                const friendProfileData = ref(null);
+                const profile = reactive({
+                    nickname: '',
+                    gender: '',
+                    birthday: '',
+                    signature: '',
+                    personality: [],
+                    hobbies: [],
+                    testAnswers: new Array(20).fill(null),
+                    isPublic: true,
+                    photo: ''
+                });
+                const photoFile = ref(null);
+                const myProfile = ref(null);
+                const communityList = ref([]);
+                const communityLoading = ref(false);
+                const friendsList = ref([]);
+                const friendRequests = ref([]);
+                const hasProfile = ref(false);
+                const isEditingProfile = ref(false);
+                
+                const showChat = ref(false);
+                const currentChatFriend = ref(null);
+                const chatMessages = ref([]);
+                const chatInput = ref('');
+                
+                const showMatchResult = ref(false);
+                const matchResult = ref(null);
+                const matchTargetUser = ref(null);
+                
+                const showHearts = ref(false);
+                const heartsContainer = ref(null);
+                
+                const showMatchModal = ref(false);
+                const matchCodeInput = ref('');
+                
+                const qrcodeRef = ref(null);
+                const chatMessagesRef = ref(null);
+                let ws = null;
+                let wsConnected = false;
+                
+                const personalityTags = ['开朗', '内向', '幽默', '稳重', '热情', '冷静', '浪漫', '理性', '感性', '随和', '独立', '体贴', '乐观', '善良', '坚强', '勇敢', '细心', '大方', '谦虚', '自信', '温柔', '活泼', '安静', '认真', '豪爽'];
+                const hobbyTags = ['阅读', '音乐', '运动', '旅行', '美食', '电影', '游戏', '摄影', '绘画', '宠物', '编程', '唱歌', '跳舞', '书法', '手工', '旅游', '健身', '篮球', '足球', '游泳', '跑步', '瑜伽', '烹饪', '烘焙'];
+                const customHobby = ref('');
+                
+                const toggleTag = (type, tag) => {
+                    const arr = profile[type];
+                    const idx = arr.indexOf(tag);
+                    if (idx > -1) {
+                        arr.splice(idx, 1);
+                    } else {
+                        arr.push(tag);
+                    }
+                };
+                
+                const addCustomHobby = () => {
+                    if (customHobby.value && !profile.hobbies.includes(customHobby.value)) {
+                        profile.hobbies.push(customHobby.value);
+                        customHobby.value = '';
+                    }
+                };
+                
+                const selectBigFiveAnswer = (index, value) => {
+                    profile.testAnswers[index] = value;
+                };
+                
+                const triggerUpload = () => {
+                    const avatarInputs = document.querySelectorAll('input[type="file"][accept="image/*"]');
+                    if (avatarInputs.length > 0) {
+                        const currentInput = avatarInputs[avatarInputs.length - 1];
+                        currentInput.value = '';
+                        currentInput.click();
+                        console.log('文件选择器触发成功，找到 ' + avatarInputs.length + ' 个input');
+                    } else {
+                        console.log('找不到文件选择器');
+                    }
+                };
+                
+                const handlePhotoUpload = (event) => {
+                    console.log('handlePhotoUpload called, event:', event);
+                    
+                    if (!event || !event.target) {
+                        console.log('event或event.target为null');
+                        return;
+                    }
+                    
+                    const inputElement = event.target;
+                    const files = inputElement.files;
+                    
+                    if (!files || files.length === 0) {
+                        console.log('没有选择文件');
+                        return;
+                    }
+                    
+                    const file = files[0];
+                    console.log('Selected file:', file.name, file.size, file.type);
+                    
+                    if (!file.type.startsWith('image/')) {
+                        alert('请选择图片文件');
+                        inputElement.value = '';
+                        return;
+                    }
+                    
+                    const maxSize = 5 * 1024 * 1024;
+                    if (file.size > maxSize) {
+                        alert('图片大小不能超过5MB');
+                        inputElement.value = '';
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onerror = (e) => {
+                        console.log('FileReader读取失败:', e);
+                        alert('图片读取失败，请重试');
+                    };
+                    
+                    reader.onload = (e) => {
+                        console.log('FileReader读取成功');
+                        if (e.target && e.target.result) {
+                            profile.photo = e.target.result;
+                            photoFile.value = file;
+                            console.log('头像预览已设置');
+                        } else {
+                            console.log('FileReader result为空');
+                        }
+                    };
+                    
+                    reader.readAsDataURL(file);
+                };
+                
+                const removePhoto = () => {
+                    profile.photo = '';
+                    photoFile.value = null;
+                    const inputs = document.querySelectorAll('input[type="file"][accept="image/*"]');
+                    inputs.forEach(input => input.value = '');
+                };
+                
+                const saveProfile = async () => {
+                    if (!profile.nickname || !profile.gender || !profile.birthday) {
+                        alert('请填写昵称、性别和出生日期');
+                        return;
+                    }
+                    
+                    if (profile.personality.length < 3) {
+                        alert('请至少选择3个性格标签');
+                        return;
+                    }
+                    
+                    if (profile.hobbies.length < 3) {
+                        alert('请至少选择3个兴趣爱好');
+                        return;
+                    }
+                    
+                    const answeredCount = profile.testAnswers.filter(a => a !== null).length;
+                    if (answeredCount < 20) {
+                        alert(`请完成所有性格测试题（已完成 ${answeredCount}/20）`);
+                        return;
+                    }
+                    
+                    loading.value = true;
+                    try {
+                        const formData = new FormData();
+                        formData.append('userId', String(userId));
+                        formData.append('nickname', profile.nickname);
+                        formData.append('gender', profile.gender);
+                        formData.append('birthday', profile.birthday);
+                        formData.append('signature', profile.signature || '');
+                        formData.append('personality', JSON.stringify(profile.personality));
+                        formData.append('hobbies', JSON.stringify(profile.hobbies));
+                        formData.append('testAnswers', JSON.stringify(profile.testAnswers));
+                        formData.append('isPublic', profile.isPublic ? 'true' : 'false');
+                        
+                        console.log('准备提交的 photoFile:', photoFile.value);
+                        if (photoFile.value) {
+                            formData.append('photo', photoFile.value);
+                            console.log('图片已添加到 FormData');
+                        } else {
+                            console.log('photoFile 为空，未添加图片');
+                        }
+                        
+                        const res = await fetch(`${BASE_URL}/dating/save`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await res.json();
+                        if (result.code === 200) {
+                            alert('保存成功');
+                            hasProfile.value = true;
+                            isEditingProfile.value = false;
+                            activeTab.value = 'profile';
+                            await loadMyProfile();
+                        } else {
+                            alert(result.msg || result.message || '保存失败');
+                        }
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                        alert('保存失败：' + (e.message || '网络错误'));
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+                
+                const loadMyProfile = async () => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/dating/my?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200 && data.data) {
+                            const d = data.data;
+                            myProfile.value = {
+                                ...d,
+                                personality: typeof d.personality === 'string' ? JSON.parse(d.personality) : (d.personality || []),
+                                hobbies: typeof d.hobbies === 'string' ? JSON.parse(d.hobbies) : (d.hobbies || []),
+                                testAnswers: typeof d.testAnswers === 'string' ? JSON.parse(d.testAnswers) : (d.testAnswers || new Array(20).fill(null))
+                            };
+                            profile.nickname = d.nickname || '';
+                            profile.gender = d.gender || '';
+                            profile.birthday = d.birthday || '';
+                            profile.signature = d.signature || '';
+                            profile.personality = myProfile.value.personality;
+                            profile.hobbies = myProfile.value.hobbies;
+                            profile.photo = d.photo || '';
+                            profile.testAnswers = myProfile.value.testAnswers;
+                            hasProfile.value = true;
+                        } else {
+                            hasProfile.value = false;
+                        }
+                    } catch (e) {
+                        console.error('加载失败:', e);
+                        hasProfile.value = false;
+                    }
+                };
+                
+                const loadCommunity = async () => {
+                    communityLoading.value = true;
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/community?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            communityList.value = data.data;
+                        }
+                    } catch (e) {
+                        console.error('加载社区失败:', e);
+                    } finally {
+                        communityLoading.value = false;
+                    }
+                };
+                
+                const loadFriends = async () => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/friends?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            // 去重：根据friendId去重
+                            const seen = new Set();
+                            const unique = data.data.filter(friend => {
+                                if (seen.has(friend.friendId)) return false;
+                                seen.add(friend.friendId);
+                                return true;
+                            });
+                            friendsList.value = unique;
+                        }
+                    } catch (e) {
+                        console.error('加载好友失败:', e);
+                    }
+                };
+                
+                const loadFriendRequests = async () => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/requests?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            friendRequests.value = data.data;
+                        }
+                    } catch (e) {
+                        console.error('加载请求失败:', e);
+                    }
+                };
+                
+                const sendFriendRequest = async (user) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/request`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ fromUserId: userId, toUserId: user.userId, message: '你好，交个朋友吧' })
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            alert('请求已发送');
+                            await loadCommunity();
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (e) {
+                        console.error('发送请求失败:', e);
+                    }
+                };
+                
+                const acceptFriendRequest = async (requestId) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/accept`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ requestId, userId })
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            alert('已接受好友请求');
+                            await loadFriends();
+                            await loadFriendRequests();
+                            await loadCommunity();
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (e) {
+                        console.error('接受请求失败:', e);
+                    }
+                };
+                
+                const rejectFriendRequest = async (requestId) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/friend/reject`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ requestId, userId })
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            alert('已拒绝好友请求');
+                            await loadFriendRequests();
+                        } else {
+                            alert(data.message);
+                        }
+                    } catch (e) {
+                        console.error('拒绝请求失败:', e);
+                    }
+                };
+                
+                const acceptRequestFromCommunity = async (user) => {
+                    const req = friendRequests.value.find(r => r.fromUserId === user.userId);
+                    if (req) {
+                        await acceptFriendRequest(req.requestId);
+                    }
+                };
+                
+                const openChat = async (friend) => {
+                    currentChatFriend.value = friend;
+                    chatMessages.value = [];
+                    showChat.value = true;
+                    await markMessagesAsRead(friend.friendId);
+                    await loadChatMessages(friend.friendId);
+                };
+                
+                const initWebSocket = () => {
+                    if (ws && wsConnected) return;
+                    
+                    // 根据当前页面协议自动选择 ws:// 或 wss://
+                    const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+                    const wsUrl = `${protocol}${window.location.host}/ws/chat?userId=${userId}`;
+                    ws = new WebSocket(wsUrl);
+                    
+                    ws.onopen = () => {
+                        console.log('WebSocket连接成功');
+                        wsConnected = true;
+                    };
+                    
+                    ws.onmessage = (event) => {
+                        try {
+                            const data = JSON.parse(event.data);
+                            
+                            if (data.type === 'new_message') {
+                                // 收到新消息
+                                if (currentChatFriend.value && data.fromUserId === currentChatFriend.value.friendId) {
+                                    // 当前正在聊天的用户发来的消息
+                                    chatMessages.value.push({
+                                        messageId: data.messageId,
+                                        fromUserId: data.fromUserId,
+                                        toUserId: data.toUserId,
+                                        content: data.content,
+                                        isRead: data.isRead,
+                                        createdAt: data.createdAt
+                                    });
+                                    nextTick(() => {
+                                        if (chatMessagesRef.value) {
+                                            chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight;
+                                        }
+                                    });
+                                    // 发送已读确认
+                                    sendReadReceipt(data.fromUserId);
+                                }
+                                // 刷新好友列表（更新未读数）
+                                loadFriends();
+                            } else if (data.type === 'message_read') {
+                                // 消息已被阅读，更新本地消息状态
+                                chatMessages.value.forEach(msg => {
+                                    if (msg.fromUserId === userId) {
+                                        msg.isRead = true;
+                                    }
+                                });
+                            } else if (data.type === 'pong') {
+                                // 心跳响应
+                            }
+                        } catch (e) {
+                            console.error('WebSocket消息解析失败:', e);
+                        }
+                    };
+                    
+                    ws.onclose = () => {
+                        console.log('WebSocket连接断开');
+                        wsConnected = false;
+                        ws = null;
+                        // 3秒后重连
+                        setTimeout(initWebSocket, 3000);
+                    };
+                    
+                    ws.onerror = (error) => {
+                        console.error('WebSocket错误:', error);
+                        wsConnected = false;
+                    };
+                };
+                
+                const sendWebSocketMessage = (type, data) => {
+                    if (ws && wsConnected) {
+                        ws.send(JSON.stringify({ type, ...data }));
+                    }
+                };
+                
+                const sendReadReceipt = (fromUserId) => {
+                    sendWebSocketMessage('read', {
+                        fromUserId: fromUserId,
+                        toUserId: userId
+                    });
+                };
+                
+                const markMessagesAsRead = async (friendId) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/chat/read`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                fromUserId: friendId,
+                                toUserId: userId
+                            })
+                        });
+                        const data = await res.json();
+                    } catch (e) {
+                        console.error('标记已读失败:', e);
+                    }
+                };
+                
+                const closeChat = () => {
+                    showChat.value = false;
+                    currentChatFriend.value = null;
+                    chatMessages.value = [];
+                };
+                
+                const viewFriendProfile = async (friend) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/dating/my?userId=${friend.friendId}`);
+                        const data = await res.json();
+                        if (data.code === 200 && data.data) {
+                            friendProfileData.value = {
+                                ...data.data,
+                                personality: typeof data.data.personality === 'string' ? JSON.parse(data.data.personality) : (data.data.personality || []),
+                                hobbies: typeof data.data.hobbies === 'string' ? JSON.parse(data.data.hobbies) : (data.data.hobbies || []),
+                                testAnswers: typeof data.data.testAnswers === 'string' ? JSON.parse(data.data.testAnswers) : (data.data.testAnswers || [])
+                            };
+                            showFriendProfile.value = true;
+                        } else {
+                            alert('无法查看好友资料');
+                        }
+                    } catch (e) {
+                        console.error('获取好友资料失败:', e);
+                        alert('获取好友资料失败');
+                    }
+                };
+                
+                const closeFriendProfile = () => {
+                    showFriendProfile.value = false;
+                    friendProfileData.value = null;
+                };
+                
+                const loadChatMessages = async (friendId) => {
+                    try {
+                        const res = await fetch(`${BASE_URL}/chat/conversation?userId1=${userId}&userId2=${friendId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            // 更新消息的已读状态（使用服务器返回的状态）
+                            chatMessages.value = data.data.map(msg => ({
+                                ...msg,
+                                isRead: msg.isRead || msg.is_read
+                            }));
+                            nextTick(() => {
+                                if (chatMessagesRef.value) {
+                                    chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight;
+                                }
+                            });
+                        }
+                    } catch (e) {
+                        console.error('加载消息失败:', e);
+                    }
+                };
+                
+                const sendMessage = async () => {
+                    if (!chatInput.value.trim()) return;
+                    
+                    const content = chatInput.value;
+                    chatInput.value = '';
+                    
+                    const msg = { content, fromUserId: parseInt(userId), toUserId: currentChatFriend.value.friendId, isRead: false };
+                    chatMessages.value.push(msg);
+                    
+                    nextTick(() => {
+                        if (chatMessagesRef.value) {
+                            chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight;
+                        }
+                    });
+                    
+                    if (content.includes('我爱你')) {
+                        showHeartsEffect();
+                    }
+                    
+                    // 使用WebSocket发送消息
+                    sendWebSocketMessage('chat', {
+                        fromUserId: userId,
+                        toUserId: currentChatFriend.value.friendId,
+                        content: content
+                    });
+                };
+                
+                const isMyMessage = (msg) => {
+                    const msgSenderId = msg.fromUserId || msg.senderId || msg.sender_id || msg.from_user_id;
+                    return parseInt(msgSenderId) === parseInt(userId);
+                };
+                
+                const startMatch = async (user) => {
+                    if (!user.matchCode) {
+                        alert('对方还没有创建匹配码');
+                        return;
+                    }
+                    matchLoading.value = true;
+                    matchProgress.value = 0;
+                    matchProgressText.value = '正在连接...';
+                    
+                    // 模拟进度动画
+                    const progressTimer = setInterval(() => {
+                        if (matchProgress.value < 85) {
+                            matchProgress.value += Math.random() * 15;
+                        }
+                    }, 200);
+                    
+                    try {
+                        matchProgressText.value = '正在分析性格数据...';
+                        const res = await fetch(`${BASE_URL}/dating/match`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId: userId, targetCode: user.matchCode })
+                        });
+                        
+                        matchProgressText.value = '正在计算匹配度...';
+                        const data = await res.json();
+                        
+                        clearInterval(progressTimer);
+                        matchProgress.value = 100;
+                        matchProgressText.value = '匹配完成！';
+                        
+                        if (data.code === 200) {
+                            matchResult.value = data.data;
+                            matchTargetUser.value = user;
+                            showMatchResult.value = true;
+                        } else {
+                            alert(data.message || '匹配失败');
+                        }
+                    } catch (e) {
+                        clearInterval(progressTimer);
+                        console.error('匹配失败:', e);
+                        alert('匹配失败，请检查网络连接');
+                    } finally {
+                        setTimeout(() => {
+                            matchLoading.value = false;
+                            matchProgress.value = 0;
+                            matchProgressText.value = '';
+                        }, 500);
+                    }
+                };
+                
+                const matchByCode = async () => {
+                    if (!matchCodeInput.value.trim()) return;
+                    
+                    matchLoading.value = true;
+                    matchProgress.value = 10;
+                    matchProgressText.value = '正在查找用户...';
+                    
+                    try {
+                        const res = await fetch(`${BASE_URL}/dating/get-by-code?code=${matchCodeInput.value.trim().toUpperCase()}`);
+                        matchProgress.value = 30;
+                        const data = await res.json();
+                        
+                        if (data.code === 200 && data.data) {
+                            const targetUser = data.data;
+                            if (targetUser.userId == userId) {
+                                matchLoading.value = false;
+                                alert('不能匹配自己');
+                                return;
+                            }
+                            matchTargetUser.value = {
+                                userId: targetUser.userId,
+                                nickname: targetUser.nickname,
+                                photo: targetUser.photo,
+                                age: targetUser.age,
+                                gender: targetUser.gender,
+                                matchCode: targetUser.matchCode
+                            };
+                            showMatchModal.value = false;
+                            matchCodeInput.value = '';
+                            
+                            // 继续调用startMatch，它会接管进度条
+                            await startMatch(matchTargetUser.value);
+                        } else {
+                            matchLoading.value = false;
+                            matchProgress.value = 0;
+                            matchProgressText.value = '';
+                            alert('未找到该匹配码对应的用户');
+                        }
+                    } catch (e) {
+                        matchLoading.value = false;
+                        matchProgress.value = 0;
+                        matchProgressText.value = '';
+                        console.error('匹配失败:', e);
+                        alert('匹配失败，请稍后重试');
+                    }
+                };
+                
+                const scanQRCode = () => {
+                    alert('请使用微信或其他扫码工具扫描二维码，二维码中包含匹配码');
+                };
+                
+                const closeMatchResult = () => {
+                    showMatchResult.value = false;
+                    matchResult.value = null;
+                    matchTargetUser.value = null;
+                };
+                
+                const addFriendFromMatch = () => {
+                    if (matchTargetUser.value) {
+                        sendFriendRequest(matchTargetUser.value);
+                        closeMatchResult();
+                    }
+                };
+                
+                const goChatFromMatch = () => {
+                    if (matchTargetUser.value) {
+                        closeMatchResult();
+                        openChat({ 
+                            friendId: matchTargetUser.value.userId, 
+                            nickname: matchTargetUser.value.nickname, 
+                            photo: matchTargetUser.value.photo 
+                        });
+                    }
+                };
+                
+                const isFriend = (targetUserId) => {
+                    return friendsList.value.some(friend => friend.friendId == targetUserId);
+                };
+                
+                const showHeartsEffect = () => {
+                    showHearts.value = true;
+                    const container = heartsContainer.value;
+                    if (!container) return;
+                    
+                    const containerWidth = container.offsetWidth;
+                    const containerHeight = container.offsetHeight;
+                    
+                    for (let i = 0; i < 20; i++) {
+                        setTimeout(() => {
+                            const heart = document.createElement('div');
+                            heart.className = 'floating-heart';
+                            heart.textContent = '❤️';
+                            heart.style.left = Math.random() * 100 + '%';
+                            heart.style.bottom = '-50px';
+                            container.appendChild(heart);
+                            
+                            const xOffset = (Math.random() - 0.5) * containerWidth;
+                            
+                            heart.animate([
+                                { bottom: '-50px', opacity: 1, transform: 'translateX(0) rotate(0deg)' },
+                                { bottom: (containerHeight + 100) + 'px', opacity: 0, transform: `translateX(${xOffset}px) rotate(360deg)` }
+                            ], {
+                                duration: 3000,
+                                easing: 'ease-out'
+                            });
+                            
+                            setTimeout(() => {
+                                heart.remove();
+                            }, 3000);
+                        }, i * 100);
+                    }
+                    
+                    setTimeout(() => {
+                        showHearts.value = false;
+                    }, 3500);
+                };
+                
+                const openEditProfile = () => {
+                    isEditingProfile.value = true;
+                };
+                
+                const closeEditProfile = () => {
+                    isEditingProfile.value = false;
+                };
+                
+                const saveQRCode = async () => {
+                    if (!myProfile.value?.qrCodeUrl) {
+                        alert('暂无二维码');
+                        return;
+                    }
+                    const link = document.createElement('a');
+                    link.href = myProfile.value.qrCodeUrl;
+                    link.download = 'dating-qrcode.png';
+                    link.click();
+                };
+                
+                const goBack = () => {
+                    window.history.back();
+                };
+                
+                onMounted(async () => {
+                    await loadMyProfile();
+                    if (hasProfile.value) {
+                        await loadCommunity();
+                        await loadFriends();
+                        await loadFriendRequests();
+                        
+                        // 连接WebSocket（实时消息推送）
+                        initWebSocket();
+                        
+                        // 定期刷新好友列表和请求（WebSocket连接失败时备用）
+                        setInterval(async () => {
+                            await loadFriends();
+                            await loadFriendRequests();
+                        }, 10000);
+                    }
+                });
+                
+                return {
+                    activeTab, friendsTab, profile, myProfile, communityList, communityLoading,
+                    friendsList, friendRequests, hasProfile, isEditingProfile,
+                    showChat, currentChatFriend, chatMessages, chatInput,
+                    showMatchResult, matchResult, showHearts,
+                    showMatchModal, matchCodeInput, matchLoading, matchProgress, matchProgressText,
+                    showFriendProfile, friendProfileData,
+                    personalityTags, hobbyTags, customHobby,
+                    toggleTag, addCustomHobby, selectBigFiveAnswer, saveProfile,
+                    loadCommunity, sendFriendRequest, acceptFriendRequest, rejectFriendRequest,
+                    acceptRequestFromCommunity, openChat, closeChat, sendMessage, isMyMessage,
+                    matchByCode, scanQRCode,
+                    startMatch, closeMatchResult, addFriendFromMatch, goChatFromMatch, isFriend,
+                    openEditProfile, closeEditProfile, saveQRCode, goBack,
+                    viewFriendProfile, closeFriendProfile,
+                    triggerUpload, handlePhotoUpload, removePhoto
+                };
+            }
+        });
+        app.mount('#app');
+    </script>
+</body>
+</html>

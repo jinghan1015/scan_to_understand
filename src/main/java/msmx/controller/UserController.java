@@ -55,7 +55,11 @@ public class UserController {
             
             Map<String, Object> result = new HashMap<>();
             result.put("code", 200);
-            result.put("data", saved);
+            
+            Map<String, Object> data = new HashMap<>();
+            data.put("userId", saved.getId());
+            data.put("nickname", saved.getNickname());
+            result.put("data", data);
             
             return ResponseEntity.ok(result);
         } catch (Exception e) {

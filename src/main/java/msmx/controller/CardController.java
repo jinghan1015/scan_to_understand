@@ -3,10 +3,17 @@ package msmx.controller;
 import msmx.entity.Card;
 import msmx.service.CardService;
 import msmx.service.QRCodeGenerator;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,8 +120,11 @@ public class CardController {
             @RequestParam(value = "images", required = false) MultipartFile[] images,
             @RequestParam(value = "video", required = false) MultipartFile video,
             @RequestParam(value = "audio", required = false) MultipartFile audio,
-            @RequestParam(value = "isPublic", required = false) Boolean isPublic) throws Exception {
-        Card card = cardService.updateCard(uuid, title, textContent, images, video, audio, isPublic);
+            @RequestParam(value = "isPublic", required = false) Boolean isPublic,
+            @RequestParam(value = "keepImageUrls", required = false) String keepImageUrls,
+            @RequestParam(value = "keepVideo", required = false) Boolean keepVideo,
+            @RequestParam(value = "keepAudio", required = false) Boolean keepAudio) throws Exception {
+        Card card = cardService.updateCard(uuid, title, textContent, images, video, audio, isPublic, keepImageUrls, keepVideo, keepAudio);
         Map<String, Object> result = new HashMap<>();
         result.put("code", 200);
         result.put("data", card);
@@ -136,6 +146,37 @@ public class CardController {
             result.put("code", 500);
             result.put("msg", e.getMessage());
             return ResponseEntity.ok(result);
+        }
+    }
+
+    @GetMapping("/download-qr/{uuid}")
+    public ResponseEntity<Resource> downloadQRCode(@PathVariable("uuid") String uuid) {
+        try {
+            Card card = cardService.getCardByUuid(uuid);
+            String qrCodeUrl = card.getQrCodeUrl();
+            
+            String fileName = qrCodeUrl.substring(qrCodeUrl.lastIndexOf("/") + 1);
+            Path filePath = Paths.get(cardService.getUploadDir(), fileName);
+            File file = filePath.toFile();
+            
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Resource resource = new FileSystemResource(file);
+            
+            // 使用卡片标题作为下载文件名
+            String title = card.getTitle() != null && !card.getTitle().isEmpty() ? card.getTitle() : "card";
+            // 移除文件名中的非法字符
+            String safeTitle = title.replaceAll("[\\\\/:*?\"<>|]", "_");
+            String downloadFileName = "qrcode_" + safeTitle + ".png";
+            
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileName + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 }

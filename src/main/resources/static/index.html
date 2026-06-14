@@ -30,20 +30,6 @@
             pointer-events: none;
         }
 
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
         .glow-orbs {
             position: fixed;
             width: 100%;
@@ -159,11 +145,31 @@
             text-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
         }
 
+        .hero-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
         .hero-subtitle {
             color: #8892b0;
             font-size: 15px;
             letter-spacing: 4px;
             font-weight: 300;
+        }
+        .dating-link {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 20px;
+            color: #ec4899;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dating-link:hover {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(168, 85, 247, 0.3));
+            transform: translateY(-2px);
         }
 
         .features-section {
@@ -461,7 +467,7 @@
         }
 
         .search-icon {
-            color: rgba(255, 255, 255, 0.5);
+            color: #9ca3af;
             font-size: 18px;
             margin-right: 12px;
         }
@@ -471,12 +477,12 @@
             background: transparent;
             border: none;
             outline: none;
-            color: #fff;
+            color: #374151;
             font-size: 15px;
         }
 
         .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: #9ca3af;
         }
 
         .search-clear-btn {
@@ -487,20 +493,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.6);
+            color: #6b7280;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .search-clear-btn:hover {
-            background: rgba(255, 100, 100, 0.2);
+            background: rgba(255, 100, 100, 0.1);
             color: #ff6464;
         }
 
         .search-results-info {
             padding: 0 10px 15px;
-            color: rgba(255, 255, 255, 0.5);
+            color: #6b7280;
             font-size: 13px;
         }
 
@@ -658,12 +664,12 @@
 
         .card-author {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.4);
+            color: #9ca3af;
         }
 
         .card-time {
             font-size: 11px;
-            color: rgba(255, 255, 255, 0.3);
+            color: #d1d5db;
         }
 
         .card-actions {
@@ -759,7 +765,7 @@
         .empty-state {
             text-align: center;
             padding: 60px 20px;
-            color: rgba(255, 255, 255, 0.4);
+            color: #9ca3af;
         }
 
         .empty-icon {
@@ -769,14 +775,24 @@
         }
 
         .qr-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border: 1px solid rgba(59,130,246,0.15); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; }
+        .qr-modal-content { background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 100%); border-radius: 24px; width: 100%; max-width: 360px; overflow: hidden; border: 1px solid rgba(59,130,246,0.15); }
         .qr-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 25px; border-bottom: 1px solid rgba(59,130,246,0.1); }
         .qr-modal-title { font-size: 18px; font-weight: 600; color: #1e3a8a; }
-        .qr-modal-close { width: 32px; height: 32px; background: rgba(96,165,250,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
+        .qr-modal-close { width: 32px; height: 32px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4b5563; font-size: 20px; cursor: pointer; }
         .qr-modal-body { padding: 25px; text-align: center; }
         .qr-image-wrapper { background: white; padding: 15px; border-radius: 16px; display: inline-block; margin-bottom: 15px; border: 1px solid rgba(59,130,246,0.1); }
         .qr-image { width: 180px; height: 180px; }
-        .qr-tip { color: #4b5563; font-size: 13px; }
+        .qr-card-title { font-size: 18px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; }
+        .qr-tip { color: #4b5563; font-size: 12px; margin-bottom: 15px; }
+        .qr-share-section { text-align: left; }
+        .qr-link-label { color: #4b5563; font-size: 12px; margin-bottom: 8px; }
+        .qr-link-box { display: flex; gap: 10px; }
+        .qr-link-input { flex: 1; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 10px 12px; color: #1e3a8a; font-size: 12px; }
+        .copy-btn { padding: 10px 20px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 10px; color: #1e3a8a; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .qr-actions { display: flex; gap: 12px; margin-top: 15px; }
+        .qr-action-btn { flex: 1; padding: 14px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; }
+        .qr-action-btn:hover { background: linear-gradient(135deg, rgba(147,197,253,0.3) 0%, rgba(191,219,254,0.4) 100%); }
+        .action-icon { width: 18px; height: 18px; }
     </style>
 </head>
 
@@ -802,7 +818,10 @@
                     <div class="orbit orbit-2"></div>
                 </div>
             </div>
-            <p class="hero-subtitle">数字化名片 · 扫码即达</p>
+            <div class="hero-bottom">
+                <p class="hero-subtitle">数字化名片 · 扫码即达</p>
+                <div class="dating-link" @click="goToDating">💕 码上交友</div>
+            </div>
         </div>
 
         <div class="features-section">
@@ -954,6 +973,31 @@
                         <img v-if="currentQRUrl" :src="currentQRUrl" class="qr-image" />
                     </div>
                     <div class="qr-tip">微信扫码查看名片</div>
+                    <div class="qr-share-section">
+                        <div class="qr-link-label">分享链接</div>
+                        <div class="qr-link-box">
+                            <input type="text" :value="currentShareUrl" readonly class="qr-link-input" />
+                            <button class="copy-btn" @click="copyShareUrl">复制</button>
+                        </div>
+                    </div>
+                    <div class="qr-actions">
+                        <button class="qr-action-btn" @click="shareQRCode">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                <polyline points="16 6 12 2 8 6"/>
+                                <line x1="12" y1="2" x2="12" y2="15"/>
+                            </svg>
+                            <span>转发</span>
+                        </button>
+                        <button class="qr-action-btn" @click="saveQRCode">
+                            <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>保存</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -973,6 +1017,9 @@
                 const searchKeyword = ref('');
                 const showQRModal = ref(false);
                 const currentQRUrl = ref('');
+                const currentCard = ref(null);
+                const currentShareUrl = ref('');
+                const NGROK_URL = ref('https://afternoon-next-mural.ngrok-free.dev');
 
                 const filteredCards = computed(() => {
                     if (!searchKeyword.value.trim()) {
@@ -985,12 +1032,30 @@
                 });
 
                 const createCard = () => {
+                    const uid = localStorage.getItem('userId');
+                    if (!uid) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
                     window.location.href = 'create-card.html';
                 };
                 const scanQR = () => {
                     window.location.href = 'scan.html';
                 };
+                const goToDating = () => {
+                    const uid = localStorage.getItem('userId');
+                    if (!uid) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    window.location.href = 'dating.html';
+                };
                 const goToMine = () => {
+                    const uid = localStorage.getItem('userId');
+                    if (!uid) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
                     window.location.href = 'mine.html';
                 };
 
@@ -1256,9 +1321,20 @@
                     if (card.qrCodeUrl) {
                         const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : BACKEND_URL + card.qrCodeUrl;
                         currentQRUrl.value = qrUrl;
+                        currentCard.value = card;
+                        currentShareUrl.value = `${NGROK_URL.value || window.location.origin}/card-detail.html?uuid=${card.uuid}`;
                         showQRModal.value = true;
                     } else {
                         vant.showToast({ type: 'fail', message: '二维码未生成' });
+                    }
+                };
+
+                const copyShareUrl = async () => {
+                    try {
+                        await navigator.clipboard.writeText(currentShareUrl.value);
+                        vant.showToast({ type: 'success', message: '链接已复制' });
+                    } catch (e) {
+                        vant.showToast({ type: 'fail', message: '复制失败' });
                     }
                 };
 
@@ -1273,12 +1349,72 @@
                 const closeQRModal = () => {
                     showQRModal.value = false;
                     currentQRUrl.value = '';
+                    currentCard.value = null;
+                };
+
+                const saveQRCode = async () => {
+                    try {
+                        const card = currentCard.value;
+                        const qrUrl = currentQRUrl.value;
+                        if (!card || !qrUrl) {
+                            vant.showToast({ type: 'fail', message: '无法获取卡片信息' });
+                            return;
+                        }
+                        
+                        const qrImage = new Image();
+                        qrImage.crossOrigin = 'anonymous';
+                        
+                        await new Promise((resolve, reject) => {
+                            qrImage.onload = resolve;
+                            qrImage.onerror = reject;
+                            qrImage.src = qrUrl;
+                        });
+                        
+                        const canvas = document.createElement('canvas');
+                        const padding = 20;
+                        canvas.width = qrImage.width + padding * 2;
+                        canvas.height = qrImage.height + padding * 2;
+                        
+                        const ctx = canvas.getContext('2d');
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        
+                        ctx.drawImage(qrImage, padding, padding);
+                        
+                        const dataUrl = canvas.toDataURL('image/png');
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        link.download = `qrcode_${card.title || 'card'}.png`;
+                        link.click();
+                        
+                        vant.showToast({ type: 'success', message: '保存成功' });
+                    } catch (e) {
+                        console.error('保存失败:', e);
+                        vant.showToast({ type: 'fail', message: '保存失败' });
+                    }
+                };
+
+                const shareQRCode = async () => {
+                    const shareUrl = `${NGROK_URL || window.location.origin}/card-detail.html?uuid=${currentCard.value?.uuid}`;
+                    if (navigator.share) {
+                        try {
+                            await navigator.share({
+                                title: '名片分享',
+                                text: '扫码查看我的名片',
+                                url: shareUrl
+                            });
+                        } catch (e) {
+                            await navigator.clipboard.writeText(shareUrl);
+                            vant.showToast({ type: 'none', message: '链接已复制，请手动分享' });
+                        }
+                    } else {
+                        await navigator.clipboard.writeText(shareUrl);
+                        vant.showToast({ type: 'none', message: '链接已复制，请手动分享' });
+                    }
                 };
 
                 const userId = localStorage.getItem('userId');
-                if (!userId) {
-                    window.location.href = 'login.html';
-                }
 
                 const handleStorageChange = (e) => {
                     if (e.key === 'likedCard') {
@@ -1307,9 +1443,12 @@
                     searchKeyword,
                     showQRModal,
                     currentQRUrl,
+                    currentCard,
+                    currentShareUrl,
                     createCard,
                     scanQR,
                     goToMine,
+                    goToDating,
                     goToSimpleText,
                     goToLinkJump,
                     goToCreateCard,
@@ -1325,6 +1464,9 @@
                     clearSearch,
                     showCardQR,
                     closeQRModal,
+                    copyShareUrl,
+                    saveQRCode,
+                    shareQRCode,
                     handleCardClick,
                     isSimpleTextCard,
                     isLinkCard

@@ -24,20 +24,6 @@
             overflow-y: auto;
         }
 
-        .grid-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(107, 114, 128, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(107, 114, 128, 0.2) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
         .glow-orbs {
             position: fixed;
             width: 100%;
@@ -417,10 +403,26 @@
                         vant.Toast.fail('请输入用户名');
                         return;
                     }
+                    
+                    // 用户名验证：必须包含字母或中文（不能全是数字）
+                    const usernameRegex = /^(?=.*[a-zA-Z\u4e00-\u9fa5])[a-zA-Z0-9\u4e00-\u9fa5]+$/;
+                    if (!usernameRegex.test(username.value)) {
+                        vant.Toast.fail('用户名必须包含字母或文字');
+                        return;
+                    }
+                    
                     if (!password.value) {
                         vant.Toast.fail('请输入密码');
                         return;
                     }
+                    
+                    // 密码验证：至少6位，包含字母和数字
+                    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{6,}$/;
+                    if (!passwordRegex.test(password.value)) {
+                        vant.Toast.fail('密码必须至少6位，包含字母和数字');
+                        return;
+                    }
+                    
                     if (password.value !== confirmPassword.value) {
                         vant.Toast.fail('密码不一致');
                         return;
