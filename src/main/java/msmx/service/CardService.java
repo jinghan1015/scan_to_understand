@@ -97,8 +97,8 @@ public class CardService {
         }
         String suffix = "";
         int dotIndex = originalName.lastIndexOf(".");
-        if (dotIndex > 0) {
-            suffix = originalName.substring(dotIndex);
+        if (dotIndex > 0 && dotIndex < originalName.length() - 1) {
+            suffix = originalName.substring(dotIndex).toLowerCase();
         }
         String newName = UUID.randomUUID().toString() + suffix;
         Path path = Paths.get(uploadDir, newName);
@@ -248,7 +248,7 @@ public class CardService {
 
         card.setUpdatedAt(LocalDateTime.now());
 
-        // 如果标题改变了，重新生成带标题的二维码
+        // 如果标题改变了，重新生成二维码
         if (title != null && !title.equals(oldTitle)) {
             System.out.println("标题改变，重新生成二维码");
             String qrContent = baseUrl + "/card-detail.html?uuid=" + card.getUuid();

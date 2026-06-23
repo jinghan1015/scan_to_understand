@@ -184,7 +184,7 @@ public class FriendService {
         for (DatingProfile profile : profiles) {
             if (profile.getUserId().equals(userId)) continue;
             
-            if (profile.getIsPublic() == null || !profile.getIsPublic()) continue;
+            if (profile.getIsPublic() != null && !profile.getIsPublic()) continue;
             
             Map<String, Object> item = new HashMap<>();
             item.put("userId", profile.getUserId());

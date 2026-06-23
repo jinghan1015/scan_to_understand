@@ -114,7 +114,7 @@ public class DatingService {
             System.out.println("生成匹配码: " + profile.getMatchCode());
         }
 
-        String qrContent = "http://localhost:8080/dating-detail.html?code=" + profile.getMatchCode();
+        String qrContent = "/dating-detail.html?code=" + profile.getMatchCode();
         String qrTitle = nickname;
         String logoPath = profile.getPhoto();
         System.out.println("准备生成二维码 - content: " + qrContent + ", logo: " + logoPath);
@@ -173,8 +173,8 @@ public class DatingService {
         }
         String suffix = "";
         int dotIndex = originalName.lastIndexOf(".");
-        if (dotIndex > 0) {
-            suffix = originalName.substring(dotIndex);
+        if (dotIndex > 0 && dotIndex < originalName.length() - 1) {
+            suffix = originalName.substring(dotIndex).toLowerCase();
         }
         String newName = UUID.randomUUID().toString() + suffix;
         Path path = Paths.get(uploadDir, newName);
@@ -184,11 +184,23 @@ public class DatingService {
     }
 
     public DatingProfile getProfileByUserId(Long userId) {
-        return datingProfileRepository.findByUserId(userId).orElse(null);
+        DatingProfile profile = datingProfileRepository.findByUserId(userId).orElse(null);
+        return profile != null ? fixUrls(profile) : null;
     }
 
     public DatingProfile getProfileByCode(String code) {
-        return datingProfileRepository.findByMatchCode(code).orElse(null);
+        DatingProfile profile = datingProfileRepository.findByMatchCode(code).orElse(null);
+        return profile != null ? fixUrls(profile) : null;
+    }
+    
+    private DatingProfile fixUrls(DatingProfile profile) {
+        if (profile.getPhoto() != null && !profile.getPhoto().startsWith("http")) {
+            profile.setPhoto(baseUrl + profile.getPhoto());
+        }
+        if (profile.getQrCodeUrl() != null && !profile.getQrCodeUrl().startsWith("http")) {
+            profile.setQrCodeUrl(baseUrl + profile.getQrCodeUrl());
+        }
+        return profile;
     }
 
     private String buildUserInfo(DatingProfile profile) throws JsonProcessingException {

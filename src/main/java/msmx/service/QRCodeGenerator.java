@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.UUID;
@@ -25,17 +26,56 @@ public class QRCodeGenerator {
 
     public static String generateQRCodeImageWithTitle(String text, String title, String uploadDir)
             throws WriterException, IOException {
-        return generateQRCodeImageWithTitleAndLogo(text, title, uploadDir, null);
+        int qrSize = 400;
+        int titleHeight = 50;
+        int totalSize = 400;
+        int totalHeight = totalSize + titleHeight;
+        
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        java.util.Map<com.google.zxing.EncodeHintType, Object> hints = new java.util.HashMap<>();
+        hints.put(com.google.zxing.EncodeHintType.ERROR_CORRECTION, com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.H);
+        
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, qrSize, qrSize, hints);
+        
+        BufferedImage combinedImage = new BufferedImage(totalSize, totalHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = combinedImage.createGraphics();
+        
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, totalSize, totalHeight);
+        
+        if (title != null && !title.isEmpty()) {
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setColor(Color.BLACK);
+            Font titleFont = new Font("Microsoft YaHei", Font.BOLD, 16);
+            g2d.setFont(titleFont);
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int textWidth = fontMetrics.stringWidth(title);
+            int textX = (totalSize - textWidth) / 2;
+            int textY = (titleHeight + fontMetrics.getAscent()) / 2;
+            g2d.drawString(title, textX, textY);
+        }
+        
+        BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+        int qrX = (totalSize - qrSize) / 2;
+        int qrY = titleHeight;
+        g2d.drawImage(qrImage, qrX, qrY, null);
+        
+        g2d.dispose();
+        
+        String fileName = UUID.randomUUID().toString() + ".png";
+        Path path = FileSystems.getDefault().getPath(uploadDir, fileName);
+        ImageIO.write(combinedImage, "PNG", path.toFile());
+        
+        return fileName;
     }
     
     public static String generateQRCodeImageWithTitleAndLogo(String text, String title, String uploadDir, String logoPath)
             throws WriterException, IOException {
         
         int qrSize = 400;
-        int titleHeight = 60;
+        int titleHeight = 50;
         int totalSize = 400;
         int totalHeight = totalSize + titleHeight;
-        int padding = 20;
         
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         java.util.Map<com.google.zxing.EncodeHintType, Object> hints = new java.util.HashMap<>();
@@ -52,17 +92,13 @@ public class QRCodeGenerator {
         if (title != null && !title.isEmpty()) {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setColor(new Color(236, 72, 153));
-            Font titleFont = new Font("Microsoft YaHei", Font.BOLD, 18);
+            Font titleFont = new Font("Microsoft YaHei", Font.BOLD, 16);
             g2d.setFont(titleFont);
             FontMetrics fontMetrics = g2d.getFontMetrics();
             int textWidth = fontMetrics.stringWidth(title);
             int textX = (totalSize - textWidth) / 2;
             int textY = (titleHeight + fontMetrics.getAscent()) / 2;
             g2d.drawString(title, textX, textY);
-            
-            g2d.setColor(new Color(236, 72, 153, 80));
-            g2d.setStroke(new BasicStroke(1));
-            g2d.drawLine(padding, titleHeight - 8, totalSize - padding, titleHeight - 8);
         }
         
         BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
@@ -70,30 +106,19 @@ public class QRCodeGenerator {
         int qrY = titleHeight;
         g2d.drawImage(qrImage, qrX, qrY, null);
         
+        int logoSize = 45;
         BufferedImage logoImage = null;
         
         if (logoPath != null && !logoPath.isEmpty()) {
-            System.out.println("尝试加载logo: " + logoPath);
-            
             logoImage = loadLogoFromFileSystem(logoPath, uploadDir);
-            
             if (logoImage == null) {
                 logoImage = loadLogoFromClasspath(logoPath);
-            }
-            
-            if (logoImage != null) {
-                System.out.println("成功加载logo图片");
             }
         }
         
         if (logoImage == null) {
-            System.out.println("使用默认logo");
-            logoImage = createDefaultLogo();
+            logoImage = createSimpleLogo();
         }
-        
-        int logoSize = 50;
-        int logoX = (totalSize - logoSize) / 2;
-        int logoY = titleHeight + (qrSize - logoSize) / 2;
         
         BufferedImage scaledLogo = new BufferedImage(logoSize, logoSize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D logoG2d = scaledLogo.createGraphics();
@@ -101,6 +126,8 @@ public class QRCodeGenerator {
         logoG2d.drawImage(logoImage, 0, 0, logoSize, logoSize, null);
         logoG2d.dispose();
         
+        int logoX = (totalSize - logoSize) / 2;
+        int logoY = titleHeight + (qrSize - logoSize) / 2;
         g2d.drawImage(scaledLogo, logoX, logoY, null);
         
         g2d.dispose();
@@ -114,6 +141,19 @@ public class QRCodeGenerator {
     
     private static BufferedImage loadLogoFromFileSystem(String logoPath, String uploadDir) {
         try {
+            if (logoPath.startsWith("http://") || logoPath.startsWith("https://")) {
+                System.out.println("尝试从URL加载logo: " + logoPath);
+                URL url = new URL(logoPath);
+                BufferedImage img = ImageIO.read(url);
+                if (img != null) {
+                    System.out.println("从URL成功读取图片，尺寸: " + img.getWidth() + "x" + img.getHeight());
+                    return img;
+                } else {
+                    System.out.println("URL图片读取为null");
+                }
+                return null;
+            }
+            
             String fullLogoPath = logoPath;
             
             if (logoPath.startsWith("/uploads/")) {
@@ -218,6 +258,38 @@ public class QRCodeGenerator {
         int rightX1 = centerX + heartW/2 - stick/2;
         g2d.fillRect(rightX1, centerY + heartH/3, stick, bodyH);
         g2d.fillOval(rightX1 - 3, centerY + heartH/3 - 6, 8, 8);
+        
+        g2d.dispose();
+        return logo;
+    }
+    
+    private static BufferedImage createSimpleLogo() {
+        int size = 45;
+        BufferedImage logo = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = logo.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        GradientPaint gradient = new GradientPaint(0, 0, new Color(236, 72, 153), size, size, new Color(168, 85, 247));
+        g2d.setPaint(gradient);
+        g2d.fillOval(0, 0, size, size);
+        
+        g2d.setColor(Color.WHITE);
+        
+        int centerX = size / 2;
+        int centerY = size / 2;
+        
+        int heartSize = 8;
+        int[] heartX = {
+            centerX,
+            centerX - heartSize, centerX - heartSize,
+            centerX, centerX + heartSize, centerX + heartSize, centerX
+        };
+        int[] heartY = {
+            centerY - heartSize,
+            centerY - heartSize * 2, centerY - heartSize * 3 / 2,
+            centerY, centerY - heartSize * 3 / 2, centerY - heartSize * 2, centerY - heartSize
+        };
+        g2d.fillPolygon(heartX, heartY, heartX.length);
         
         g2d.dispose();
         return logo;

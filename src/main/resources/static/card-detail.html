@@ -158,7 +158,7 @@
                 </div>
                 <div class="images-grid">
                     <div class="image-item" :class="{ single: images.length === 1 }" v-for="(img, idx) in images" :key="idx">
-                        <img :src="img.startsWith('http') ? img : BASE_URL + img" @click="previewImage(idx)" />
+                        <img :src="img.startsWith('http') ? img : NGROK_URL + img" @click="previewImage(idx)" />
                     </div>
                 </div>
             </div>
@@ -169,7 +169,7 @@
                     <div class="section-title">视频内容</div>
                 </div>
                 <div class="media-wrapper">
-                    <video controls :src="card.videoUrl.startsWith('http') ? card.videoUrl : BASE_URL + card.videoUrl"></video>
+                    <video controls :src="card.videoUrl.startsWith('http') ? card.videoUrl : NGROK_URL + card.videoUrl"></video>
                 </div>
             </div>
 
@@ -179,7 +179,7 @@
                     <div class="section-title">语音介绍</div>
                 </div>
                 <div class="media-wrapper">
-                    <audio controls :src="card.audioUrl.startsWith('http') ? card.audioUrl : BASE_URL + card.audioUrl"></audio>
+                    <audio controls :src="card.audioUrl.startsWith('http') ? card.audioUrl : NGROK_URL + card.audioUrl"></audio>
                 </div>
             </div>
         </div>

@@ -167,7 +167,7 @@
                     <div class="qr-tip">扫码查看你的文字卡片</div>
                 </div>
                 <div class="qr-footer">
-                    <button class="qr-btn secondary" @click="showQRModal = false">关闭</button>
+                    <button class="qr-btn secondary" @click="closeQRModal">关闭</button>
                     <button class="qr-btn primary" @click="saveQRCode">保存图片</button>
                 </div>
             </div>
@@ -292,6 +292,11 @@
 
                 const goBack = () => history.back();
 
+                const closeQRModal = () => {
+                    showQRModal.value = false;
+                    location.href = 'index.html';
+                };
+
                 const copyLink = async () => {
                     try {
                         await navigator.clipboard.writeText(currentUrl.value);
@@ -304,7 +309,7 @@
                 return {
                     title, content, isPublic, aiPrompt, aiResult, aiGenerating,
                     showLoading, showQRModal, qrCodeUrl, currentUrl,
-                    generateAI, fillContent, generateQRCode, saveQRCode, goBack, copyLink
+                    generateAI, fillContent, generateQRCode, saveQRCode, goBack, copyLink, closeQRModal
                 };
             }
         }).use(vant).mount('#app');

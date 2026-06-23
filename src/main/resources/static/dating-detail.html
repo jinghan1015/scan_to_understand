@@ -78,7 +78,7 @@
             <div class="card-wrapper">
                 <div class="card-header">
                     <div class="avatar" :class="{ default: !profile.photo }">
-                        <img v-if="profile.photo" :src="profile.photo" />
+                        <img v-if="profile.photo" :src="profile.photo.startsWith('http') ? profile.photo : NGROK_URL + profile.photo" />
                         <span v-else>👤</span>
                     </div>
                     <div class="name">{{ profile.nickname }}</div>

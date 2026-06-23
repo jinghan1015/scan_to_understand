@@ -156,7 +156,7 @@
                     <div class="qr-tip">扫码查看你的外链跳转</div>
                 </div>
                 <div class="qr-footer">
-                    <button class="qr-btn secondary" @click="showQRModal = false">关闭</button>
+                    <button class="qr-btn secondary" @click="closeQRModal">关闭</button>
                     <button class="qr-btn primary" @click="saveQRCode">保存图片</button>
                 </div>
             </div>
@@ -263,6 +263,11 @@
 
                 const goBack = () => history.back();
 
+                const closeQRModal = () => {
+                    showQRModal.value = false;
+                    location.href = 'index.html';
+                };
+
                 const copyLink = async () => {
                     try {
                         await navigator.clipboard.writeText(currentUrl.value);
@@ -274,7 +279,7 @@
 
                 return {
                     title, targetUrl, isPublic, showLoading, showQRModal, qrCodeUrl, currentUrl,
-                    isValidUrl, generateQRCode, saveQRCode, goBack, copyLink
+                    isValidUrl, generateQRCode, saveQRCode, goBack, copyLink, closeQRModal
                 };
             }
         }).use(vant).mount('#app');

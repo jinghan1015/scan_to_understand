@@ -280,7 +280,7 @@
             <div class="qr-modal-content">
                 <div class="qr-header"><span class="qr-title">🎉 二维码已生成</span></div>
                 <div class="qr-body">
-                    <div class="qr-image-wrapper"><img :src="createdCard?.qrCodeUrl" alt="二维码" class="qr-image" /></div>
+                    <div class="qr-image-wrapper"><img :src="(createdCard?.qrCodeUrl || '').startsWith('http') ? createdCard?.qrCodeUrl : NGROK_URL + createdCard?.qrCodeUrl" alt="二维码" class="qr-image" /></div>
                     <div class="qr-tip">扫码查看名片</div>
                 </div>
                 <div class="qr-footer">
@@ -530,6 +530,11 @@
                     videoFile.value = null;
                     audioFile.value = null;
                     createdCard.value = null;
+                    if (isEdit.value) {
+                        location.href = 'mine.html';
+                    } else {
+                        location.href = 'index.html';
+                    }
                 };
 
                 const goToMine = () => location.href = 'mine.html';
@@ -543,12 +548,12 @@
                 };
 
                 const fillContent = () => {
-                    if (aiResult.value) {
-                        textContent.value = aiResult.value;
-                        aiResult.value = '';
-                        aiPrompt.value = '';
-                        vant.showToast({ type: 'success', message: '已填充' });
-                    }
+                    if (!aiResult.value) return;
+                    title.value = aiPrompt.value.trim();
+                    textContent.value = aiResult.value.trim();
+                    aiResult.value = '';
+                    aiPrompt.value = '';
+                    vant.showToast({ type: 'success', message: '已填充' });
                 };
 
                 const generateAI = async () => {

@@ -122,6 +122,8 @@
         .qr-link-label { color: #4b5563; font-size: 12px; margin-bottom: 8px; }
         .qr-link-box { display: flex; gap: 10px; }
         .qr-link-input { flex: 1; background: rgba(255,255,255,0.9); border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 10px 12px; color: #1e3a8a; font-size: 12px; }
+        .tag-item { padding: 10px 15px; border-radius: 10px; font-size: 14px; color: #6b7280; background: rgba(255,255,255,0.8); border: 1px solid #e5e7eb; cursor: pointer; transition: all 0.3s ease; }
+        .tag-item.active { background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%); border-color: #3b82f6; color: white; }
         .copy-btn { padding: 10px 20px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border-radius: 10px; color: #1e3a8a; font-size: 13px; font-weight: 600; cursor: pointer; }
         .qr-actions { display: flex; gap: 12px; margin-top: 15px; }
         .qr-action-btn { flex: 1; padding: 14px; background: linear-gradient(135deg, rgba(147,197,253,0.2) 0%, rgba(191,219,254,0.3) 100%); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; color: #1e3a8a; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; }
@@ -166,6 +168,7 @@
                         <div class="stat-item"><span>{{ myCards.length }}</span> 我的卡片</div>
                         <div class="stat-item"><span>{{ likedCards.length }}</span> 已点赞</div>
                         <div class="stat-item"><span>{{ favoritedCards.length }}</span> 已收藏</div>
+                        <div class="stat-item"><span>{{ collections.length }}</span> 我的合集</div>
                     </div>
                 </div>
             </div>
@@ -176,6 +179,7 @@
                 <div class="tab-item" :class="{ active: activeTab === 'my' }" @click="switchTab('my')">我的卡片</div>
                 <div class="tab-item" :class="{ active: activeTab === 'liked' }" @click="switchTab('liked')">点赞</div>
                 <div class="tab-item" :class="{ active: activeTab === 'favorited' }" @click="switchTab('favorited')">收藏</div>
+                <div class="tab-item" :class="{ active: activeTab === 'collection' }" @click="switchTab('collection')">合集</div>
             </div>
 
             <div v-if="activeTab === 'my'" class="sub-tabs">
@@ -187,7 +191,7 @@
 
         <div class="cards-section">
             <div class="section-header">
-                <div class="section-title">{{ activeTab === 'my' ? '我的卡片' : activeTab === 'liked' ? '点赞的卡片' : '收藏的卡片' }}</div>
+                <div class="section-title">{{ activeTab === 'my' ? '我的卡片' : activeTab === 'liked' ? '点赞的卡片' : activeTab === 'favorited' ? '收藏的卡片' : '合集' }}</div>
                 <div class="cards-count">{{ filteredCards.length }} 个</div>
             </div>
 
@@ -197,24 +201,28 @@
             </div>
 
             <div v-else-if="filteredCards.length === 0" class="empty-state">
-                <div class="empty-icon">{{ activeTab === 'my' ? '📋' : activeTab === 'liked' ? '❤️' : '⭐' }}</div>
+                <div class="empty-icon">{{ activeTab === 'my' ? '📋' : activeTab === 'liked' ? '❤️' : activeTab === 'favorited' ? '⭐' : '📚' }}</div>
                 <div class="empty-text">
-                    {{ activeTab === 'my' ? '还没有创建任何卡片' : activeTab === 'liked' ? '还没有点赞任何卡片' : '还没有收藏任何卡片' }}
+                    {{ activeTab === 'my' ? '还没有创建任何卡片' : activeTab === 'liked' ? '还没有点赞任何卡片' : activeTab === 'favorited' ? '还没有收藏任何卡片' : '还没有创建任何合集' }}
                 </div>
                 <a v-if="activeTab === 'my'" href="create-card.html" class="empty-btn">创建卡片</a>
+                <button v-if="activeTab === 'collection'" class="empty-btn" style="display: inline-block;" @click="showCreateCollectionModal = true">创建合集</button>
             </div>
 
             <div v-else class="cards-list">
-                <div class="card-item" v-for="card in filteredCards" :key="card.id || card.uuid" @click="openDetail(card)">
+                <div class="card-item" v-for="card in filteredCards" :key="card.id || card.uuid" @click="activeTab === 'collection' ? openCollectionDetail(card) : openDetail(card)">
                     <div class="card-header">
                         <div v-if="getFirstImage(card)" class="card-image-area">
                             <div class="card-thumbnail">
-                                <img :src="getFirstImage(card)" />
+                                <img :src="getFirstImage(card).startsWith('http') ? getFirstImage(card) : NGROK_URL + getFirstImage(card)" />
                             </div>
                         </div>
+                        <div v-else-if="activeTab === 'collection'" class="card-image-area">
+                            <div class="card-thumbnail" style="background: linear-gradient(135deg, rgba(168,85,247,0.3) 0%, rgba(147,197,253,0.4) 100%);">📚</div>
+                        </div>
                         <div class="card-content">
-                            <div class="card-title">{{ card.title }}</div>
-                            <div class="card-desc">{{ card.textContent || '暂无描述' }}</div>
+                            <div class="card-title">{{ card.title || card.name }}</div>
+                            <div class="card-desc">{{ card.textContent || card.description || '暂无描述' }}</div>
                             <div class="card-meta">
                                 <span v-if="card.isPublic !== undefined" :class="['privacy-badge', card.isPublic ? 'public' : 'private']">
                                     {{ card.isPublic ? '公开' : '私密' }}
@@ -222,12 +230,12 @@
                                 <span class="card-time">{{ formatTime(card.createdAt) }}</span>
                             </div>
                         </div>
-                        <div v-if="activeTab === 'my' && card.qrCodeUrl" class="card-qr-area">
-                            <img :src="(card.qrCodeUrl.startsWith('http') ? '' : BACKEND_URL) + card.qrCodeUrl" class="card-qr-thumb" @click.stop="showQR(card)" />
+                        <div v-if="card.qrCodeUrl" class="card-qr-area">
+                            <img :src="card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : NGROK_URL + card.qrCodeUrl" class="card-qr-thumb" @click.stop="showQR(card)" />
                         </div>
                     </div>
                     <div class="card-footer">
-                        <button class="card-action-btn view" @click.stop="openDetail(card)">
+                        <button class="card-action-btn view" @click.stop="activeTab === 'collection' ? openCollectionDetail(card) : openDetail(card)">
                             <svg class="view-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                                 <polyline points="14 2 14 8 20 8"/>
@@ -303,6 +311,37 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="showCreateCollectionModal" class="qr-modal">
+            <div class="qr-modal-content" style="max-width: 380px;">
+                <div class="qr-modal-header">
+                    <span class="qr-modal-title">创建合集</span>
+                    <span class="qr-modal-close" @click="closeCreateCollectionModal">×</span>
+                </div>
+                <div class="qr-modal-body">
+                    <div style="padding: 0 15px;">
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px;">合集标题</label>
+                            <input v-model="newCollectionTitle" type="text" placeholder="请输入合集标题" style="width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none;" />
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px;">文字介绍</label>
+                            <textarea v-model="newCollectionDesc" placeholder="请输入合集介绍" rows="4" style="width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 10px; font-size: 14px; outline: none; resize: none;"></textarea>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 10px;">可见性</label>
+                            <div style="display: flex; gap: 10px;">
+                                <div :class="['tag-item', { active: newCollectionPublic === false }]" @click="newCollectionPublic = false" style="flex: 1; text-align: center;">🔒 私密</div>
+                                <div :class="['tag-item', { active: newCollectionPublic === true }]" @click="newCollectionPublic = true" style="flex: 1; text-align: center;">🌍 公开</div>
+                            </div>
+                        </div>
+                        <button @click="createCollection" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 50%, #bfdbfe 100%); border: none; border-radius: 12px; color: #1e3a8a; font-size: 16px; font-weight: 600; cursor: pointer;">
+                            创建合集
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://fastly.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
@@ -317,6 +356,7 @@
                 const myCards = ref([]);
                 const likedCards = ref([]);
                 const favoritedCards = ref([]);
+                const collections = ref([]);
                 const loading = ref(true);
                 const nickname = ref(localStorage.getItem('nickname') || '');
                 const activeTab = ref('my');
@@ -326,6 +366,10 @@
                 const currentShareUrl = ref('');
                 const currentCard = ref(null);
                 const currentCardTitle = ref('');
+                const showCreateCollectionModal = ref(false);
+                const newCollectionTitle = ref('');
+                const newCollectionDesc = ref('');
+                const newCollectionPublic = ref(false);
 
                 const userId = localStorage.getItem('userId');
                 if (!userId) { location.href = 'login.html'; }
@@ -343,6 +387,8 @@
                         cards = likedCards.value;
                     } else if (activeTab.value === 'favorited') {
                         cards = favoritedCards.value;
+                    } else if (activeTab.value === 'collection') {
+                        cards = collections.value;
                     }
                     return cards;
                 });
@@ -377,9 +423,19 @@
                     } catch (e) { console.error(e); }
                 };
 
+                const fetchCollections = async () => {
+                    try {
+                        const res = await fetch(`${BACKEND_URL}/api/collection/my?userId=${userId}`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            collections.value = data.data;
+                        }
+                    } catch (e) { console.error(e); }
+                };
+
                 const fetchAllData = async () => {
                     loading.value = true;
-                    await Promise.all([fetchMyCards(), fetchLikedCards(), fetchFavoritedCards()]);
+                    await Promise.all([fetchMyCards(), fetchLikedCards(), fetchFavoritedCards(), fetchCollections()]);
                     loading.value = false;
                 };
 
@@ -408,6 +464,10 @@
                     window.open(`card-detail.html?uuid=${card.uuid}&from=mine`, '_blank');
                 };
 
+                const openCollectionDetail = (collection) => {
+                    window.open(`collection-detail.html?id=${collection.id}&from=mine`, '_blank');
+                };
+
                 const openEdit = (card) => {
                     location.href = `create-card.html?uuid=${card.uuid}`;
                 };
@@ -416,7 +476,7 @@
                     if (card.qrCodeUrl) {
                         currentCard.value = card;
                         currentCardTitle.value = card.title || '未命名卡片';
-                        const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : BACKEND_URL + card.qrCodeUrl;
+                        const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : NGROK_URL + card.qrCodeUrl;
                         currentQRUrl.value = qrUrl;
                         currentShareUrl.value = `${NGROK_URL}/card-detail.html?uuid=${card.uuid}`;
                         showQRModal.value = true;
@@ -431,6 +491,48 @@
                     currentCardTitle.value = '';
                     currentQRUrl.value = '';
                     currentShareUrl.value = '';
+                };
+
+                const closeCreateCollectionModal = () => {
+                    showCreateCollectionModal.value = false;
+                    newCollectionTitle.value = '';
+                    newCollectionDesc.value = '';
+                    newCollectionPublic.value = false;
+                };
+
+                const createCollection = async () => {
+                    if (!newCollectionTitle.value.trim()) {
+                        vant.showToast({ type: 'fail', message: '请输入合集标题' });
+                        return;
+                    }
+                    try {
+                        vant.showLoadingToast({ message: '创建中...', duration: 0 });
+                        const res = await fetch(`${BACKEND_URL}/api/collection`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: userId,
+                                title: newCollectionTitle.value.trim(),
+                                description: newCollectionDesc.value.trim(),
+                                isPublic: newCollectionPublic.value
+                            })
+                        });
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            const collectionId = data.data.id;
+                            await fetch(`${BACKEND_URL}/api/collection/${collectionId}/generate-qr`);
+                            vant.closeToast();
+                            vant.showToast({ type: 'success', message: '创建成功，二维码已生成' });
+                            closeCreateCollectionModal();
+                            await fetchCollections();
+                        } else {
+                            vant.closeToast();
+                            vant.showToast({ type: 'fail', message: data.msg || '创建失败' });
+                        }
+                    } catch (e) {
+                        vant.closeToast();
+                        vant.showToast({ type: 'fail', message: '网络错误' });
+                    }
                 };
 
                 const copyShareUrl = async () => {
@@ -529,9 +631,11 @@
                 };
 
                 return {
-                    myCards, likedCards, favoritedCards, loading, nickname, activeTab, privacyFilter,
-                    filteredCards, showQRModal, currentQRUrl, currentShareUrl, NGROK_URL,
-                    switchTab, getFirstImage, formatTime, openDetail, openEdit, showQR, closeQRModal,
+                    myCards, likedCards, favoritedCards, collections, loading, nickname, activeTab, privacyFilter,
+                    filteredCards, showQRModal, currentQRUrl, currentShareUrl, currentCardTitle, NGROK_URL,
+                    showCreateCollectionModal, newCollectionTitle, newCollectionDesc, newCollectionPublic,
+                    switchTab, getFirstImage, formatTime, openDetail, openCollectionDetail, openEdit, showQR, closeQRModal,
+                    closeCreateCollectionModal, createCollection,
                     copyShareUrl, saveQRCode, shareQRCode, deleteCard, goBack, goToHome, createCard, logout
                 };
             }

@@ -545,6 +545,23 @@
             color: #00d4ff;
         }
 
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #00d4ff, #00a0cc);
+            border-color: rgba(0, 212, 255, 0.5);
+            color: white;
+        }
+
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(3, 280px);
@@ -880,21 +897,32 @@
 
             <div class="section-header">
                 <div class="section-title">🌟 社区广场</div>
-                <div class="card-count">{{ filteredCards.length }} 个卡片</div>
+                <div class="card-count">{{ activeTab === 'cards' ? filteredCards.length + ' 个卡片' : filteredCollections.length + ' 个合集' }}</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; padding: 0 10px 15px;">
+                <div :class="['tab-btn', { active: activeTab === 'cards' }]" @click="activeTab = 'cards'">📋 卡片</div>
+                <div :class="['tab-btn', { active: activeTab === 'collections' }]" @click="activeTab = 'collections'; fetchCollections()">📚 合集</div>
             </div>
 
             <div v-if="loading" class="loading-spinner"></div>
 
-            <div v-else-if="filteredCards.length === 0" class="empty-state">
+            <div v-else-if="activeTab === 'cards' && filteredCards.length === 0" class="empty-state">
                 <div class="empty-icon">📭</div>
                 <p>{{ searchKeyword ? '没有找到相关卡片' : '还没有人分享卡片' }}</p>
                 <p>{{ searchKeyword ? '试试其他关键词吧' : '成为第一个分享者吧！' }}</p>
             </div>
 
-            <div v-else class="cards-grid">
+            <div v-else-if="activeTab === 'collections' && filteredCollections.length === 0" class="empty-state">
+                <div class="empty-icon">📚</div>
+                <p>还没有人分享合集</p>
+                <p>成为第一个分享者吧！</p>
+            </div>
+
+            <div v-else-if="activeTab === 'cards'" class="cards-grid">
                 <div class="card-item" v-for="card in filteredCards" :key="card.id">
                     <div class="card-image" @click="handleCardClick(card)">
-                        <img v-if="getFirstImage(card)" :src="getFirstImage(card)" alt="封面" />
+                        <img v-if="getFirstImage(card)" :src="getFirstImage(card).startsWith('http') ? getFirstImage(card) : NGROK_URL + getFirstImage(card)" alt="封面" />
                         <div v-else-if="isLinkCard(card)" class="card-image-placeholder">
                             <span>🔗</span>
                         </div>
@@ -934,6 +962,40 @@
                                 </div>
                             </div>
                             <div class="qr-btn" @click.stop="showCardQR(card)">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                    <rect x="14" y="14" width="4" height="4"/>
+                                    <rect x="19" y="14" width="2" height="2"/>
+                                    <rect x="14" y="19" width="2" height="2"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="activeTab === 'collections'" class="cards-grid">
+                <div class="card-item" v-for="collection in filteredCollections" :key="collection.id">
+                    <div class="card-image" @click="viewCollection(collection)">
+                        <div class="card-image-placeholder" style="background: linear-gradient(135deg, rgba(168,85,247,0.3) 0%, rgba(147,197,253,0.4) 100%);">
+                            <span style="font-size: 48px;">📚</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title" @click="viewCollection(collection)">{{ collection.title }}</div>
+                        <div class="card-desc" @click="viewCollection(collection)">{{ collection.description || '暂无描述' }}</div>
+                        <div class="card-meta">
+                            <span class="card-author">用户 {{ collection.userId }}</span>
+                            <span class="card-time">{{ formatTime(collection.createdAt) }}</span>
+                        </div>
+                        <div class="card-actions">
+                            <div class="action-item" @click.stop="viewCollection(collection)">
+                                <span class="action-icon">👁️</span>
+                                <span class="action-count">查看</span>
+                            </div>
+                            <div class="qr-btn" @click.stop="showCollectionQR(collection)">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="7"/>
                                     <rect x="14" y="3" width="7" height="7"/>
@@ -1013,6 +1075,7 @@
         const app = createApp({
             setup() {
                 const cards = ref([]);
+                const collections = ref([]);
                 const loading = ref(true);
                 const searchKeyword = ref('');
                 const showQRModal = ref(false);
@@ -1020,6 +1083,7 @@
                 const currentCard = ref(null);
                 const currentShareUrl = ref('');
                 const NGROK_URL = ref('https://afternoon-next-mural.ngrok-free.dev');
+                const activeTab = ref('cards');
 
                 const filteredCards = computed(() => {
                     if (!searchKeyword.value.trim()) {
@@ -1028,6 +1092,16 @@
                     const keyword = searchKeyword.value.toLowerCase();
                     return cards.value.filter(card =>
                         card.title && card.title.toLowerCase().includes(keyword)
+                    );
+                });
+
+                const filteredCollections = computed(() => {
+                    if (!searchKeyword.value.trim()) {
+                        return collections.value;
+                    }
+                    const keyword = searchKeyword.value.toLowerCase();
+                    return collections.value.filter(collection =>
+                        collection.title && collection.title.toLowerCase().includes(keyword)
                     );
                 });
 
@@ -1114,6 +1188,34 @@
                         console.error('获取卡片失败:', e);
                     } finally {
                         loading.value = false;
+                    }
+                };
+
+                const fetchCollections = async () => {
+                    try {
+                        const res = await fetch(`${BACKEND_URL}/api/collection/public`);
+                        const data = await res.json();
+                        if (data.code === 200) {
+                            collections.value = data.data;
+                        }
+                    } catch (e) {
+                        console.error('获取合集失败:', e);
+                    }
+                };
+
+                const viewCollection = (collection) => {
+                    window.open(`collection-detail.html?id=${collection.id}`, '_blank');
+                };
+
+                const showCollectionQR = (collection) => {
+                    if (collection.qrCodeUrl) {
+                        currentCard.value = collection;
+                        const qrUrl = collection.qrCodeUrl.startsWith('http') ? collection.qrCodeUrl : NGROK_URL.value + collection.qrCodeUrl;
+                        currentQRUrl.value = qrUrl;
+                        currentShareUrl.value = `${NGROK_URL.value}/collection-detail.html?id=${collection.id}`;
+                        showQRModal.value = true;
+                    } else {
+                        vant.showToast({ type: 'fail', message: '二维码未生成' });
                     }
                 };
 
@@ -1319,7 +1421,7 @@
 
                 const showCardQR = (card) => {
                     if (card.qrCodeUrl) {
-                        const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : BACKEND_URL + card.qrCodeUrl;
+                        const qrUrl = card.qrCodeUrl.startsWith('http') ? card.qrCodeUrl : NGROK_URL + card.qrCodeUrl;
                         currentQRUrl.value = qrUrl;
                         currentCard.value = card;
                         currentShareUrl.value = `${NGROK_URL.value || window.location.origin}/card-detail.html?uuid=${card.uuid}`;
@@ -1438,9 +1540,12 @@
 
                 return {
                     cards,
+                    collections,
                     filteredCards,
+                    filteredCollections,
                     loading,
                     searchKeyword,
+                    activeTab,
                     showQRModal,
                     currentQRUrl,
                     currentCard,
@@ -1469,7 +1574,10 @@
                     shareQRCode,
                     handleCardClick,
                     isSimpleTextCard,
-                    isLinkCard
+                    isLinkCard,
+                    fetchCollections,
+                    viewCollection,
+                    showCollectionQR
                 };
             }
         });
